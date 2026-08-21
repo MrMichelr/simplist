@@ -12,6 +12,9 @@ import { WidgetState } from "../state";
 
 const MENU_WIDTH = 250;
 
+/** The header's menu button: a 24px glyph with 8px padding. */
+const BUTTON_SIZE = IconSize.m + Space[200] * 2;
+
 /** The dropdown: 4px padding, 8px radius, and the heavier Drop Shadow/600. */
 export function MenuOverlay({ theme, hideDone, actions }: WidgetState) {
   return (
@@ -23,16 +26,16 @@ export function MenuOverlay({ theme, hideDone, actions }: WidgetState) {
       cornerRadius={Radius.s}
       padding={Space[100]}
       spacing={Space[100]}
-      // Anchored to the header's menu button. The card's 24px padding plus the
-      // button's 40px height puts the button's lower edge at 64; the menu opens
-      // 4px below that, with its right edge flush to the button's.
+      // Anchored to the header's menu button: left edges flush, opening 4px
+      // below it. The menu is wider than the button, so it overhangs the card
+      // to the right — which is why the widget root sets overflow visible.
       //
       // Positioned from the left with an absolute offset rather than a right
       // constraint: a right constraint resolves against the parent's measured
       // width, and this menu is an absolutely-positioned sibling of the card,
       // so that width is not something to rely on.
-      x={WIDGET_WIDTH - Space[600] - MENU_WIDTH}
-      y={Space[600] + 40 + Space[100]}
+      x={WIDGET_WIDTH - Space[600] - BUTTON_SIZE}
+      y={Space[600] + BUTTON_SIZE + Space[100]}
     >
       <MenuItem
         theme={theme}

@@ -39,7 +39,10 @@ export function PowerScreen({ theme, powerDraft, actions }: WidgetState) {
             stroke: theme.border.default,
             cornerRadius: Radius.s,
             padding: Space[400],
-            height: 375,
+            // minHeight, not height: a fixed height on an Input frame is not
+            // honoured once the text wraps past it, and the field would then
+            // clip rather than grow.
+            minHeight: 375,
           }}
           onTextEditEnd={(event) => actions.setPowerDraft(event.characters)}
         />
@@ -73,7 +76,7 @@ function PowerTag({ theme }: { theme: Theme }) {
     <AutoLayout
       name="Power tag"
       spacing={10}
-      padding={{ vertical: Space[100], horizontal: Space[200] }}
+      padding={{ vertical: Space[200], horizontal: Space[100] }}
       cornerRadius={Radius.s}
       fill={theme.accent.base}
       verticalAlignItems="center"

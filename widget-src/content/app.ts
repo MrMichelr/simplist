@@ -1,6 +1,6 @@
 /** Static widget metadata. Keep `version` in step with package.json. */
 export const App = {
-  name: "SimpList",
+  name: "Simplist",
   /** Wordmark as it appears in the About panel. */
   wordmark: "Simplist\u2122",
   version: "4.0",
@@ -11,7 +11,7 @@ export const App = {
    */
   copyrightYear: 2026,
   url: {
-    github: "https://github.com/MrMichelr/",
-    website: "https://www.mr-michel.com",
+    github: "https://github.com/michojito/",
+    website: "https://www.mr-michel.com?utm_source=figma&utm_medium=widget&utm_campaign=v4",
   },
 } as const;
