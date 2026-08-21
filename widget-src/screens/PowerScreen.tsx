@@ -76,7 +76,7 @@ function PowerTag({ theme }: { theme: Theme }) {
     <AutoLayout
       name="Power tag"
       spacing={10}
-      padding={{ vertical: Space[200], horizontal: Space[100] }}
+      padding={{ vertical: Space[100], horizontal: Space[200] }}
       cornerRadius={Radius.s}
       fill={theme.accent.base}
       verticalAlignItems="center"
