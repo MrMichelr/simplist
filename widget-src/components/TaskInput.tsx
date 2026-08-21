@@ -2,7 +2,7 @@ const { widget } = figma;
 const { AutoLayout, Input } = widget;
 
 import { Radius, Space, Theme, Type } from "../theme";
-import { AccentIconButton } from "./Button";
+import { IconButton } from "./Button";
 
 type Props = {
   theme: Theme;
@@ -36,7 +36,7 @@ export function TaskInput({ theme, value, placeholder, onSubmit, disabled }: Pro
         stroke={theme.border.default}
         cornerRadius={Radius.s}
         padding={{ vertical: Space[400], horizontal: Space[600] }}
-        hoverStyle={disabled ? undefined : { stroke: theme.accent.base }}
+        hoverStyle={disabled ? undefined : { stroke: theme.border.strong }}
       >
         {!disabled && (
           <Input
@@ -56,9 +56,11 @@ export function TaskInput({ theme, value, placeholder, onSubmit, disabled }: Pro
           />
         )}
       </AutoLayout>
-      <AccentIconButton
+      <IconButton
         theme={theme}
         name="plus"
+        size="l"
+        variant="primary"
         tooltip="Add task"
         disabled={disabled}
         onClick={() => onSubmit(value)}

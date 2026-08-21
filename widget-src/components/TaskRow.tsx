@@ -2,9 +2,18 @@ const { widget } = figma;
 const { AutoLayout, Input } = widget;
 
 import { IconSize, Radius, Space, Theme, Type } from "../theme";
+import { IconButton } from "./Button";
 import { Checkbox, CheckboxVariant } from "./Checkbox";
 import { Icon } from "./Icon";
 import { Label } from "./Text";
+
+/**
+ * Width of the reorder column: a 12px glyph in a 2px-padded xs icon button.
+ * Set explicitly because an AutoLayout with no children falls back to Figma's
+ * 100x100 default frame — which is what made this column 100px wide when a row
+ * had nothing to render there.
+ */
+const REORDER_COLUMN = IconSize.xs + Space[50] * 2;
 
 export type TaskRowProps = {
   theme: Theme;
@@ -28,19 +37,19 @@ export type TaskRowProps = {
 };
 
 /**
- * One row of the list.
+ * One row of the list. Every variant — task or subtask, open or done, editing
+ * or not — is this component; the design models them as one component with
+ * three booleans, and so does this.
  *
- * Hover feedback is limited to what the widget API exposes: `hoverStyle`
- * accepts fill, stroke and opacity only. The reorder arrows therefore sit in
- * the layout at all times with `opacity: 0` and fade in — they cannot be
- * mounted on hover, and reserving their space is what stops the row from
- * jumping.
+ * Hover feedback is limited by the API. `hoverStyle` applies only to the node
+ * actually under the pointer — it does not cascade — so the design's intent of
+ * revealing the reorder arrows when the ROW is hovered cannot be expressed.
+ * Each arrow reveals on its own hover instead, and keeps its slot in the layout
+ * so the row does not jump. This is the closest the widget API allows.
  */
 export function TaskRow(props: TaskRowProps) {
   const { theme, done, isSubtask, editable, editing } = props;
-
   const checkbox: CheckboxVariant = editable ? "editable" : done ? "done" : "open";
-  const canReorder = !isSubtask && (props.onMoveUp || props.onMoveDown);
 
   return (
     <AutoLayout
@@ -50,34 +59,32 @@ export function TaskRow(props: TaskRowProps) {
       verticalAlignItems="start"
       padding={{ vertical: Space[200], horizontal: Space[0] }}
     >
+      {/* Reorder column. Subtasks reorder within their group, exactly as
+          top-level tasks do — the design gives every variant these controls. */}
       <AutoLayout
         name="Left Actions"
         direction="vertical"
+        width={REORDER_COLUMN}
         padding={{ top: Space[50] }}
-        height="fill-parent"
       >
-        {canReorder && (
-          <>
-            <Icon
-              name="chevron.up"
-              size={IconSize.xs}
-              fill={theme.icon}
-              opacity={0}
-              hoverStyle={{ opacity: 1 }}
-              onClick={props.onMoveUp}
-              tooltip="Move up"
-            />
-            <Icon
-              name="chevron.down"
-              size={IconSize.xs}
-              fill={theme.icon}
-              opacity={0}
-              hoverStyle={{ opacity: 1 }}
-              onClick={props.onMoveDown}
-              tooltip="Move down"
-            />
-          </>
-        )}
+        <IconButton
+          theme={theme}
+          name="chevron.up"
+          size="xs"
+          tooltip="Move up"
+          revealOnHover
+          disabled={!props.onMoveUp}
+          onClick={props.onMoveUp}
+        />
+        <IconButton
+          theme={theme}
+          name="chevron.down"
+          size="xs"
+          tooltip="Move down"
+          revealOnHover
+          disabled={!props.onMoveDown}
+          onClick={props.onMoveDown}
+        />
       </AutoLayout>
 
       <AutoLayout
@@ -127,7 +134,8 @@ export function TaskRow(props: TaskRowProps) {
               letterSpacing={Type.body.letterSpacing}
               fill={theme.text.primary}
               inputFrameProps={{
-                fill: theme.surface.secondary,
+                fill: theme.surface.base,
+                stroke: theme.accent.base,
                 cornerRadius: Radius.xs,
                 padding: { vertical: Space[50], horizontal: Space[100] },
               }}
@@ -158,26 +166,32 @@ export function TaskRow(props: TaskRowProps) {
  * A completed task offers neither and the slot collapses, as in the design.
  */
 function RowAction({ theme, editable, done, isSubtask, onDelete, onAddSubtask }: TaskRowProps) {
-  const action = editable
-    ? { name: "trash" as const, fill: theme.danger.base, hover: theme.danger.tint, onClick: onDelete, tooltip: "Delete" }
-    : !done && !isSubtask
-      ? { name: "plus" as const, fill: theme.text.disabled, hover: theme.surface.secondary, onClick: onAddSubtask, tooltip: "Add subtask" }
-      : null;
+  if (editable && onDelete) {
+    return (
+      <IconButton
+        theme={theme}
+        name="trash"
+        size="s"
+        tooltip="Delete"
+        fill={theme.danger.base}
+        hoverFill={theme.danger.tint}
+        onClick={onDelete}
+      />
+    );
+  }
 
-  if (!action || !action.onClick) return null;
+  if (!editable && !done && !isSubtask && onAddSubtask) {
+    return (
+      <IconButton
+        theme={theme}
+        name="plus"
+        size="s"
+        tooltip="Add subtask"
+        fill={theme.text.disabled}
+        onClick={onAddSubtask}
+      />
+    );
+  }
 
-  return (
-    <AutoLayout
-      name="Action"
-      padding={Space[150]}
-      cornerRadius={Radius.xs}
-      horizontalAlignItems="center"
-      verticalAlignItems="center"
-      hoverStyle={{ fill: action.hover }}
-      onClick={action.onClick}
-      tooltip={action.tooltip}
-    >
-      <Icon name={action.name} size={IconSize.s} fill={action.fill} />
-    </AutoLayout>
-  );
+  return null;
 }

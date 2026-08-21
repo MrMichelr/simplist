@@ -54,6 +54,7 @@ export type Actions = {
   cancelSubtask: () => void;
   toggleSubtask: (parentId: string, id: string) => void;
   removeSubtask: (parentId: string, id: string) => void;
+  moveSubtask: (parentId: string, index: number, direction: "up" | "down") => void;
   renameSubtask: (parentId: string, id: string, content: string) => void;
 
   // Inline editing
@@ -178,6 +179,8 @@ export function useWidgetState(): WidgetState {
       setTasks((current) => Tasks.removeSubtask(current, parentId, id));
       setEditingId((current) => (current === id ? null : current));
     },
+    moveSubtask: (parentId, index, direction) =>
+      setTasks((current) => Tasks.moveSubtask(current, parentId, index, direction)),
     renameSubtask: (parentId, id, content) => {
       if (Tasks.isBlank(content)) {
         setTasks((current) => Tasks.removeSubtask(current, parentId, id));

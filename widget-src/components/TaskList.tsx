@@ -62,7 +62,7 @@ export function TaskList({
             }
           />
 
-          {task.subtasks.map((sub) => (
+          {task.subtasks.map((sub, subIndex) => (
             <TaskRow
               key={sub.id}
               theme={theme}
@@ -75,6 +75,16 @@ export function TaskList({
               onStartEditing={() => actions.startEditing(sub.id)}
               onRename={(content) => actions.renameSubtask(task.id, sub.id, content)}
               onDelete={() => actions.removeSubtask(task.id, sub.id)}
+              onMoveUp={
+                subIndex > 0
+                  ? () => actions.moveSubtask(task.id, subIndex, "up")
+                  : undefined
+              }
+              onMoveDown={
+                subIndex < task.subtasks.length - 1
+                  ? () => actions.moveSubtask(task.id, subIndex, "down")
+                  : undefined
+              }
             />
           ))}
 

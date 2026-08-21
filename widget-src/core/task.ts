@@ -94,6 +94,24 @@ export function removeSubtask(tasks: TaskList, parentId: string, id: string): Ta
   }));
 }
 
+/** Moves a subtask one slot up or down within its parent. A no-op at either end. */
+export function moveSubtask(
+  tasks: TaskList,
+  parentId: string,
+  index: number,
+  direction: "up" | "down"
+): TaskList {
+  return mapTask(tasks, parentId, (task) => {
+    const target = direction === "up" ? index - 1 : index + 1;
+    if (index < 0 || index >= task.subtasks.length) return task;
+    if (target < 0 || target >= task.subtasks.length) return task;
+
+    const subtasks = [...task.subtasks];
+    [subtasks[index], subtasks[target]] = [subtasks[target], subtasks[index]];
+    return { ...task, subtasks };
+  });
+}
+
 export function renameSubtask(
   tasks: TaskList,
   parentId: string,

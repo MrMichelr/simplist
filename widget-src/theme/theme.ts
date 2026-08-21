@@ -21,12 +21,18 @@ export type Theme = {
     tertiary: string;
     /** `color-gray-50` — the unselected swatch ring. */
     ring: string;
+    /** `color-background-surface-hover` — tertiary controls on hover. */
+    hover: string;
+    /** `color-background-surface-secondary-hover` — filled controls on hover. */
+    secondaryHover: string;
   };
   border: {
     /** `color-border-defaut` */
     default: string;
     /** `color-border-disabled` */
     disabled: string;
+    /** `color-border-defaut-secondary` — an input's border on hover. */
+    strong: string;
   };
   text: {
     /** `color-text-surface` */
@@ -39,6 +45,8 @@ export type Theme = {
     disabled: string;
     /** `color-text-brand-on` — foreground on an accent fill. */
     onAccent: string;
+    /** `color-text-disabled-on` — a label on a disabled fill. */
+    onDisabled: string;
   };
   accent: {
     base: string;
@@ -70,6 +78,13 @@ export function buildTheme(config: ThemeConfig): Theme {
   const light = config.scheme === "light";
   const accent = config.accent ?? DEFAULT_ACCENT;
   const accentBase = pick(light, accent, shade(accent, 25));
+  // The library defines color-background-brand-hover as #002DD5, which is not a
+  // uniform shade of #0038FF. Use the token when the accent is the default and
+  // fall back to a computed shade for a custom one.
+  const isDefaultAccent = accent.toLowerCase() === DEFAULT_ACCENT.toLowerCase();
+  const accentHover = isDefaultAccent
+    ? pick(light, Raw.brandHover, shade(Raw.brandHover, 45))
+    : pick(light, shade(accent, -18), shade(accent, 45));
 
   // The Figma library only defines light mode. Dark inverts the neutral ramp
   // against the same steps, preserving the contrast relationships.
@@ -80,10 +95,13 @@ export function buildTheme(config: ThemeConfig): Theme {
       secondary: pick(light, Raw.gray100, Raw.gray900),
       tertiary: pick(light, Raw.gray300, Raw.slate700),
       ring: pick(light, Raw.gray50, Raw.gray900),
+      hover: pick(light, Raw.gray100, Raw.gray900),
+      secondaryHover: pick(light, Raw.gray200, Raw.slate700),
     },
     border: {
       default: pick(light, Raw.gray200, Raw.slate700),
       disabled: pick(light, Raw.gray400, Raw.slate700),
+      strong: Raw.gray400,
     },
     text: {
       primary: pick(light, Raw.slate950, Raw.white),
@@ -93,10 +111,11 @@ export function buildTheme(config: ThemeConfig): Theme {
       // The library hard-codes #EEF6FF, which only reads on a blue-ish accent.
       // A custom accent picks whichever of the two reads better instead.
       onAccent: readableOn(accentBase, Raw.brandOn, Raw.slate950),
+      onDisabled: Raw.gray400,
     },
     accent: {
       base: accentBase,
-      hover: pick(light, shade(accent, -20), shade(accent, 45)),
+      hover: accentHover,
       tint: pick(light, Raw.brandTint, Raw.gray900),
     },
     danger: {

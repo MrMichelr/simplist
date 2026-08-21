@@ -16,8 +16,12 @@ type Props = {
 /**
  * The 24px box at the head of a task row.
  *
- * `editable` is the Edit screen's affordance: the same footprint, holding a
- * pencil instead of a checkmark, so rows do not shift when the screen changes.
+ * Hover fills the box and never moves the border — the design keeps each
+ * variant's border colour constant across states, so the checkbox does not
+ * appear to change meaning as the pointer passes over it.
+ *
+ * `editable` is the Edit screen's affordance: the same footprint holding a
+ * pencil, so rows do not shift when the screen changes.
  */
 export function Checkbox({ theme, variant, onClick, tooltip }: Props) {
   const style = {
@@ -25,19 +29,19 @@ export function Checkbox({ theme, variant, onClick, tooltip }: Props) {
       fill: undefined as string | undefined,
       stroke: theme.accent.base,
       glyph: null,
-      hover: { fill: theme.accent.tint, stroke: theme.accent.hover },
+      hoverFill: theme.accent.tint,
     },
     done: {
       fill: undefined as string | undefined,
       stroke: theme.border.disabled,
       glyph: { name: "checkmark" as const, fill: theme.text.disabled },
-      hover: { stroke: theme.accent.base },
+      hoverFill: theme.surface.hover,
     },
     editable: {
       fill: theme.surface.secondary,
       stroke: theme.border.default,
       glyph: { name: "pencil" as const, fill: theme.text.disabled },
-      hover: { fill: theme.accent.tint, stroke: theme.accent.base },
+      hoverFill: theme.surface.secondaryHover,
     },
   }[variant];
 
@@ -52,7 +56,7 @@ export function Checkbox({ theme, variant, onClick, tooltip }: Props) {
       stroke={style.stroke}
       horizontalAlignItems="center"
       verticalAlignItems="center"
-      hoverStyle={style.hover}
+      hoverStyle={{ fill: style.hoverFill }}
       onClick={onClick}
       tooltip={tooltip}
     >

@@ -61,7 +61,10 @@ export const Raw = {
   gray200: "#E5E7EB",
   /** `color-background-surface-tertiary`, `color-text-disabled` */
   gray300: "#D1D5DC",
-  /** `color-text-surface-tertiary`, `color-border-disabled` */
+  /**
+   * `color-text-surface-tertiary`, `color-border-disabled`,
+   * `color-border-defaut-secondary`, `color-text-disabled-on`.
+   */
   gray400: "#99A1AF",
   gray900: "#111827",
   gray950: "#030712",
@@ -70,6 +73,8 @@ export const Raw = {
   black200: "#0C0C0C1A",
   /** `color-background-brand` */
   brand: "#0038FF",
+  /** `color-background-brand-hover` — hand-picked, not a computed shade. */
+  brandHover: "#002DD5",
   /** `color-text-brand-on` — foreground on a brand fill. */
   brandOn: "#EEF6FF",
   /** `color-background-brand-tertiary` — a faint accent wash. */

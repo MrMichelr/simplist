@@ -20,8 +20,11 @@ export function MenuOverlay({ theme, hideDone, actions }: WidgetState) {
       cornerRadius={Radius.s}
       padding={Space[100]}
       spacing={Space[100]}
-      x={{ type: "right", offset: -258 }}
-      y={64}
+      // Anchored to the header's menu button: the card's 24px padding plus the
+      // button's 40px height puts its lower edge at 64, and the design opens
+      // the menu 4px below that, right-aligned with the button.
+      x={{ type: "right", offset: Space[600] }}
+      y={Space[600] + 40 + Space[100]}
     >
       <MenuItem
         theme={theme}
