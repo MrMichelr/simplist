@@ -11,17 +11,17 @@ type IconButtonProps = {
   name: IconName;
   onClick: (event: WidgetClickEvent) => void | Promise<unknown>;
   tooltip?: string;
-  size?: number;
-  /** Icon colour. Defaults to the neutral icon token. */
+  /** Glyph size. The padding follows it: 8px at 24, 6px at 16. */
+  size?: 16 | 24;
   fill?: string;
-  /** Fill of the button surface on hover. Omit for no hover fill. */
   hoverFill?: string;
 };
 
 /**
- * A bare icon target. Hover paints the surface rather than the glyph, which is
- * the only kind of feedback the widget API allows — `hoverStyle` accepts fill,
- * stroke and opacity, and nothing else.
+ * A bare icon target.
+ *
+ * Hover paints the surface, not the glyph — `hoverStyle` accepts only fill,
+ * stroke and opacity, so surface tinting is the feedback available.
  */
 export function IconButton({
   theme,
@@ -32,11 +32,12 @@ export function IconButton({
   fill,
   hoverFill,
 }: IconButtonProps) {
+  const large = size === IconSize.m;
   return (
     <AutoLayout
       name="Icon Button"
-      padding={Space[200]}
-      cornerRadius={Radius.s}
+      padding={large ? Space[200] : Space[150]}
+      cornerRadius={large ? Radius.s : Radius.xs}
       verticalAlignItems="center"
       horizontalAlignItems="center"
       hoverStyle={{ fill: hoverFill ?? theme.surface.secondary }}
@@ -48,7 +49,7 @@ export function IconButton({
   );
 }
 
-type AccentButtonProps = {
+type AccentIconButtonProps = {
   theme: Theme;
   name: IconName;
   onClick: (event: WidgetClickEvent) => void | Promise<unknown>;
@@ -56,17 +57,17 @@ type AccentButtonProps = {
   disabled?: boolean;
 };
 
-/** The filled accent square beside the new-task input. */
+/** The filled accent square beside the new-task field: 16px padding, 8px radius. */
 export function AccentIconButton({
   theme,
   name,
   onClick,
   tooltip,
   disabled,
-}: AccentButtonProps) {
+}: AccentIconButtonProps) {
   return (
     <AutoLayout
-      name="Accent Button"
+      name="Icon Button"
       padding={Space[400]}
       cornerRadius={Radius.s}
       verticalAlignItems="center"
@@ -79,7 +80,7 @@ export function AccentIconButton({
       <Icon
         name={name}
         size={IconSize.m}
-        fill={disabled ? theme.surface.tertiary : theme.accent.tint}
+        fill={disabled ? theme.surface.tertiary : theme.text.onAccent}
       />
     </AutoLayout>
   );
@@ -89,11 +90,12 @@ type TextButtonProps = {
   theme: Theme;
   label: string;
   onClick: (event: WidgetClickEvent) => void | Promise<unknown>;
+  /** `tertiary` is accent text on no fill; `primary` is white on accent. */
   variant?: "tertiary" | "primary";
   width?: WidgetJSX.AutolayoutSize;
 };
 
-/** A text button. `tertiary` is the accent-on-transparent style used for "Done". */
+/** A text button: Callout label, 40px min height, 16/8 padding, 4px radius. */
 export function TextButton({
   theme,
   label,
@@ -115,10 +117,7 @@ export function TextButton({
       hoverStyle={{ fill: primary ? theme.accent.hover : theme.surface.secondary }}
       onClick={onClick}
     >
-      <Label
-        style={Type.callout}
-        fill={primary ? theme.text.onAccent : theme.accent.base}
-      >
+      <Label style={Type.callout} fill={primary ? theme.text.onAccent : theme.accent.base}>
         {label}
       </Label>
     </AutoLayout>

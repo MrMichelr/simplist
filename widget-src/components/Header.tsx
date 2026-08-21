@@ -10,18 +10,14 @@ type Props = {
   title: string;
   /** Trailing control — the menu button, a "Done" button, or the Power tag. */
   trailing?: FigmaDeclarativeNode;
-  /** Collapsed mode drops the rule under the header. */
+  /** The collapsed card drops the rule. */
   divider?: boolean;
 };
 
+/** Logo, title, trailing control, then a 12px gap and the rule. */
 export function Header({ theme, title, trailing, divider = true }: Props) {
   return (
-    <AutoLayout
-      name="Header"
-      direction="vertical"
-      width="fill-parent"
-      spacing={Space[300]}
-    >
+    <AutoLayout name="Header" direction="vertical" width="fill-parent" spacing={Space[300]}>
       <AutoLayout
         name="Bar"
         width="fill-parent"

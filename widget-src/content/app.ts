@@ -1,7 +1,9 @@
 /** Static widget metadata. Keep `version` in step with package.json. */
 export const App = {
   name: "SimpList",
-  version: "4.0.0",
+  /** Wordmark as it appears in the About panel. */
+  wordmark: "Simplist\u2122",
+  version: "4.0",
   author: "Michel Rodriguez",
   /**
    * Fixed rather than derived from `new Date()`: a widget must render the same

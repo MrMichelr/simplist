@@ -2,6 +2,7 @@ const { widget } = figma;
 const { AutoLayout, Input, Line } = widget;
 
 import { Task } from "../core";
+import { Strings } from "../content/strings";
 import { Radius, Space, Theme, Type } from "../theme";
 import { Actions } from "../state";
 import { TaskRow } from "./TaskRow";
@@ -117,10 +118,10 @@ function SubtaskDraft({
       <Input
         name="Input"
         value=""
-        placeholder="New subtask"
+        placeholder={Strings.input.subtask}
         width="fill-parent"
         inputBehavior="wrap"
-        fontFamily={Type.family}
+        fontFamily={Type.body.fontFamily}
         fontSize={Type.body.fontSize}
         fontWeight={Type.body.fontWeight}
         lineHeight={Type.body.lineHeight}

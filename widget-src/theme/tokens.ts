@@ -5,7 +5,7 @@
  * file: `size-space-300` -> `Space[300]`, `border-radius-s` -> `Radius.s`.
  */
 
-/** `size-space-*`. The scale is sparse on purpose — these are the only steps used. */
+/** `size-space-*`. Sparse on purpose — these are the only steps the design uses. */
 export const Space = {
   0: 0,
   50: 2,
@@ -22,6 +22,7 @@ export const Radius = {
   xs: 4,
   s: 8,
   m: 16,
+  xl: 48,
 } as const;
 
 /** `size-icon-*` */
@@ -30,12 +31,13 @@ export const IconSize = {
   s: 16,
   m: 24,
   l: 32,
+  xl: 48,
 } as const;
 
 /** `size-depth-*` */
-const Depth = { 100: 4, 200: 8, 400: 16 } as const;
+const Depth = { 100: 4, 200: 8, 400: 16, 800: 32 } as const;
 
-/** The widget's fixed canvas width, from the Figma frames (400 - 2x24 padding). */
+/** Widget frame width, from the Figma screens. */
 export const WIDGET_WIDTH = 400;
 
 /* -------------------------------------------------------------------------- */
@@ -45,120 +47,182 @@ export const WIDGET_WIDTH = 400;
 /** Raw palette. Prefer the semantic names on `Theme` in application code. */
 export const Raw = {
   white: "#FFFFFF",
+  /** `color-text-surface` */
   slate950: "#0F172B",
+  /** `color-background-neutral` — icon tint and the slate accent swatch. */
   slate700: "#314158",
+  /** `color-text-surface-secondary` */
+  gray500: "#6A7282",
+  /** `color-gray-50` — the unselected swatch ring. */
+  gray50: "#F9FAFB",
+  /** `color-background-surface-secondary` */
   gray100: "#F3F4F6",
+  /** `color-border-defaut` */
   gray200: "#E5E7EB",
+  /** `color-background-surface-tertiary`, `color-text-disabled` */
   gray300: "#D1D5DC",
+  /** `color-text-surface-tertiary`, `color-border-disabled` */
   gray400: "#99A1AF",
   gray900: "#111827",
   gray950: "#030712",
-  black05: "#0C0C0C0D",
+  /** `color-black-100` / `color-black-200` — shadow tints. */
+  black100: "#0C0C0C0D",
+  black200: "#0C0C0C1A",
+  /** `color-background-brand` */
   brand: "#0038FF",
+  /** `color-text-brand-on` — foreground on a brand fill. */
+  brandOn: "#EEF6FF",
+  /** `color-background-brand-tertiary` — a faint accent wash. */
   brandTint: "#EEF6FF",
-  danger: "#E30044",
-  dangerTint: "#FFEEEE",
+  /** `color-background-negative` */
+  negative: "#E30044",
+  negativeTint: "#FFEEEE",
 } as const;
 
-/** Accent presets offered in the colour picker. */
-export const AccentPresets = {
-  blue: "#0038FF",
-  orange: "#FC4100",
-  yellow: "#FFC700",
-  green: "#41B06E",
-  purple: "#8F00FF",
-  red: "#F21363",
-  gray: "#6B6B6B",
-  black: "#000000",
-} as const;
+/**
+ * The eight swatches in the colour picker, in the order the design lays them
+ * out. Values come straight from the `color-*-500` variables.
+ */
+export const AccentPresets = [
+  { name: "Blue", value: "#0038FF" },
+  { name: "Tangerine", value: "#FE4F18" },
+  { name: "Amber", value: "#FFAA00" },
+  { name: "Green", value: "#1DC84D" },
+  { name: "Purple", value: "#7F06F7" },
+  { name: "Pink", value: "#F4469C" },
+  { name: "Red", value: "#E30044" },
+  { name: "Slate", value: "#314158" },
+] as const;
 
-export const DEFAULT_ACCENT = AccentPresets.blue;
+export const DEFAULT_ACCENT = AccentPresets[0].value;
+
+/** Looks up a preset's display name, for the Settings row. */
+export function accentName(hex: string | undefined): string {
+  const match = AccentPresets.filter(
+    (preset) => preset.value.toLowerCase() === (hex ?? DEFAULT_ACCENT).toLowerCase()
+  )[0];
+  return match ? match.name : "Custom";
+}
 
 /* -------------------------------------------------------------------------- */
 /* Typography                                                                 */
 /* -------------------------------------------------------------------------- */
 
 export type TextStyle = {
+  fontFamily: string;
   fontSize: number;
   fontWeight: WidgetJSX.FontWeight;
   lineHeight: string;
   letterSpacing: string;
 };
 
+const SANS = "Inter";
+const MONO = "JetBrains Mono";
+
 /**
- * Figma stores letter-spacing as a percentage of the font size, and the widget
- * API accepts the same percentage string, so these carry across unchanged.
+ * The Figma text styles, one entry each. Figma stores letter-spacing as a
+ * percentage of the font size and the widget API takes the same percentage
+ * string, so these carry across unchanged.
  */
 export const Type = {
-  family: "Inter",
-  mono: "IBM Plex Mono",
+  sans: SANS,
+  mono: MONO,
 
-  /** Title 1 / Emphasized — screen headings. */
+  /** Title 1/Emphasized — screen headings. */
   title: {
+    fontFamily: SANS,
     fontSize: 28,
     fontWeight: 700,
     lineHeight: "120%",
     letterSpacing: "-3%",
   },
-  /** Body / Normal — task text and most labels. */
+  /** Headline/Normal — emphasised body, e.g. the empty-state title. */
+  headline: {
+    fontFamily: SANS,
+    fontSize: 17,
+    fontWeight: 600,
+    lineHeight: "130%",
+    letterSpacing: "-2.5%",
+  },
+  /** Body/Normal — task text, menu items, settings labels. */
   body: {
+    fontFamily: SANS,
     fontSize: 17,
     fontWeight: 400,
     lineHeight: "130%",
     letterSpacing: "-2.5%",
   },
-  /** Callout / Normal — buttons. */
+  /** Callout/Normal — button labels. */
   callout: {
+    fontFamily: SANS,
     fontSize: 16,
     fontWeight: 500,
     lineHeight: "135%",
     letterSpacing: "-2%",
   },
-  /** Footnote — secondary copy. */
-  footnote: {
-    fontSize: 13,
+  /** Subheadline/Normal — secondary copy. */
+  subheadline: {
+    fontFamily: SANS,
+    fontSize: 15,
     fontWeight: 400,
-    lineHeight: "130%",
-    letterSpacing: "-1%",
+    lineHeight: "135%",
+    letterSpacing: "-1.5%",
   },
-  /** Caption — the copyright line. */
+  /** Caption 2/Normal — swatch labels and the copyright line. */
   caption: {
+    fontFamily: SANS,
     fontSize: 11,
     fontWeight: 400,
     lineHeight: "120%",
-    letterSpacing: "0%",
+    letterSpacing: "0.5%",
   },
-} satisfies { family: string; mono: string } & Record<string, TextStyle | string>;
+  /** Power Mode's textarea. */
+  code: {
+    fontFamily: MONO,
+    fontSize: 17,
+    fontWeight: 400,
+    lineHeight: "130%",
+    letterSpacing: "-2.5%",
+  },
+  /** The Power tag. */
+  codeSmall: {
+    fontFamily: MONO,
+    fontSize: 13,
+    fontWeight: 400,
+    lineHeight: "140%",
+    letterSpacing: "-1%",
+  },
+} satisfies { sans: string; mono: string } & Record<string, TextStyle | string>;
 
 /* -------------------------------------------------------------------------- */
 /* Effects                                                                    */
 /* -------------------------------------------------------------------------- */
 
+const shadow = (y: number, blur: number, color: string): WidgetJSX.Effect => ({
+  type: "drop-shadow",
+  color,
+  offset: { x: 0, y },
+  blur,
+  spread: 0,
+  blendMode: "normal",
+  visible: true,
+  showShadowBehindNode: false,
+});
+
 /**
- * `Drop Shadow/500`. Two stacked shadows, as in the Figma effect style.
+ * `Drop Shadow/500` — the widget card and the info/accent panels.
  *
- * Figma's widget best practices flag shadows as expensive to render, so this is
- * the only elevation in the system and it is applied once per surface.
+ * Figma's widget best practices flag shadows as expensive, so the system has
+ * exactly two elevations and each surface applies one.
  */
-export const Elevation: WidgetJSX.Effect[] = [
-  {
-    type: "drop-shadow",
-    color: Raw.black05,
-    offset: { x: 0, y: Depth[200] },
-    blur: Depth[400],
-    spread: 0,
-    blendMode: "normal",
-    visible: true,
-    showShadowBehindNode: false,
-  },
-  {
-    type: "drop-shadow",
-    color: Raw.black05,
-    offset: { x: 0, y: Depth[100] },
-    blur: Depth[100],
-    spread: 0,
-    blendMode: "normal",
-    visible: true,
-    showShadowBehindNode: false,
-  },
+export const Elevation500: WidgetJSX.Effect[] = [
+  shadow(Depth[200], Depth[400], Raw.black100),
+  shadow(Depth[100], Depth[100], Raw.black100),
+];
+
+/** `Drop Shadow/600` — the dropdown menu, which sits above the card. */
+export const Elevation600: WidgetJSX.Effect[] = [
+  shadow(Depth[200], Depth[800], Raw.black100),
+  shadow(Depth[200], Depth[200], Raw.black100),
+  shadow(Depth[100], Depth[100], Raw.black200),
 ];

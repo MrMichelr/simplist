@@ -1,27 +1,31 @@
 const { widget } = figma;
-const { AutoLayout, Line } = widget;
+const { AutoLayout, Frame, Rectangle } = widget;
 
 import { Strings } from "../content/strings";
 import { Header } from "../components/Header";
 import { TextButton } from "../components/Button";
-import { Icon } from "../components/Icon";
 import { Label } from "../components/Text";
+import { Separator } from "../components/Separator";
 import { Surface } from "../components/Surface";
-import { buildTheme, IconSize, Radius, Scheme, Space, Theme, Type } from "../theme";
+import {
+  accentName,
+  buildTheme,
+  Radius,
+  Scheme,
+  Space,
+  Theme,
+  Type,
+} from "../theme";
 import { WidgetState } from "../state";
 
-export function SettingsScreen({ theme, accent, actions }: WidgetState) {
+export function SettingsScreen({ theme, scheme, accent, actions }: WidgetState) {
   return (
     <Surface theme={theme}>
       <Header
         theme={theme}
         title={Strings.settings.title}
         trailing={
-          <TextButton
-            theme={theme}
-            label={Strings.done}
-            onClick={() => actions.goTo("list")}
-          />
+          <TextButton theme={theme} label={Strings.done} onClick={() => actions.goTo("list")} />
         }
       />
       <AutoLayout
@@ -30,34 +34,43 @@ export function SettingsScreen({ theme, accent, actions }: WidgetState) {
         width="fill-parent"
         spacing={Space[300]}
       >
-        <Row theme={theme} label={Strings.settings.appearance}>
-          <AutoLayout name="Options" spacing={Space[200]}>
-            <SchemePreview
+        <Row theme={theme} label={Strings.settings.appearance} paddingBottom>
+          <AutoLayout name="Options" spacing={Space[200]} verticalAlignItems="center">
+            <Choice
               theme={theme}
               scheme="light"
               accent={accent}
               label={Strings.settings.light}
+              selected={scheme === "light"}
               onClick={() => actions.setScheme("light")}
             />
-            <SchemePreview
+            <Choice
               theme={theme}
               scheme="dark"
               accent={accent}
               label={Strings.settings.dark}
+              selected={scheme === "dark"}
               onClick={() => actions.setScheme("dark")}
             />
           </AutoLayout>
         </Row>
 
-        <Line name="Separator" stroke={theme.border.default} length="fill-parent" />
+        <Separator theme={theme} />
 
         <Row theme={theme} label={Strings.settings.accent}>
-          <AutoLayout name="Options" spacing={Space[300]} verticalAlignItems="center">
+          <AutoLayout name="Options" spacing={Space[400]} verticalAlignItems="center">
+            <Label
+              style={Type.caption}
+              fill={theme.text.tertiary}
+              horizontalAlignText="right"
+            >
+              {accentName(accent)}
+            </Label>
             <AutoLayout
               name="Swatch"
               width={48}
               height={48}
-              cornerRadius={Radius.xs}
+              cornerRadius={Radius.s}
               fill={theme.accent.base}
               hoverStyle={{ fill: theme.accent.hover }}
               onClick={() => actions.toggleOverlay("accent")}
@@ -70,100 +83,125 @@ export function SettingsScreen({ theme, accent, actions }: WidgetState) {
   );
 }
 
+/** One settings line: label on the left, controls on the right, 12px vertical padding. */
 function Row({
   theme,
   label,
   children,
+  paddingBottom,
 }: {
   theme: Theme;
   label: string;
   children: FigmaDeclarativeNode;
+  paddingBottom?: boolean;
 }) {
   return (
     <AutoLayout
-      name="Item"
+      name="Content"
+      direction="vertical"
       width="fill-parent"
-      spacing="auto"
-      verticalAlignItems="center"
-      padding={{ vertical: Space[200] }}
+      padding={{ bottom: paddingBottom ? Space[100] : Space[0] }}
     >
-      <Label style={Type.body} fill={theme.text.primary}>
-        {label}
-      </Label>
-      {children}
+      <AutoLayout
+        name="Item"
+        width="fill-parent"
+        spacing={Space[600]}
+        verticalAlignItems="center"
+        padding={{ vertical: Space[300], horizontal: Space[0] }}
+      >
+        <Label style={Type.body} fill={theme.text.primary} width="fill-parent">
+          {label}
+        </Label>
+        {children}
+      </AutoLayout>
     </AutoLayout>
   );
 }
 
-/**
- * A miniature of the widget in the given scheme, so the choice is shown rather
- * than described. Building a throwaway theme keeps the preview honest — it uses
- * the same function that paints the real screen.
- */
-function SchemePreview({
+/** A theme preview with its caption underneath. */
+function Choice({
   theme,
   scheme,
   accent,
   label,
+  selected,
   onClick,
 }: {
   theme: Theme;
   scheme: Scheme;
   accent: string | undefined;
   label: string;
+  selected: boolean;
   onClick: () => void;
 }) {
-  const preview = buildTheme({ scheme, accent });
-  const selected = theme.scheme === scheme;
-
   return (
     <AutoLayout
       name="Choice"
       direction="vertical"
+      width={84}
       spacing={Space[100]}
       horizontalAlignItems="center"
       onClick={onClick}
     >
       <AutoLayout
-        name="Preview"
-        width={84}
-        height={64}
-        cornerRadius={Radius.s}
-        padding={Space[200]}
-        spacing={Space[100]}
-        direction="vertical"
-        fill={preview.surface.base}
-        stroke={selected ? theme.accent.base : preview.border.default}
-        strokeWidth={selected ? 2 : 1}
+        name="Theme"
+        padding={1}
+        cornerRadius={Radius.s - 2}
+        stroke={selected ? theme.accent.base : theme.surface.ring}
+        strokeWidth={1}
         hoverStyle={{ stroke: theme.accent.base }}
       >
-        <AutoLayout spacing={Space[50]} verticalAlignItems="center">
-          <Icon name="logo" size={IconSize.s} fill={preview.accent.base} />
-          <AutoLayout width={28} height={6} cornerRadius={2} fill={preview.text.primary} />
-        </AutoLayout>
-        <AutoLayout
-          width="fill-parent"
-          height={10}
-          cornerRadius={2}
-          fill={preview.surface.secondary}
-        />
-        <AutoLayout spacing={Space[50]} verticalAlignItems="center">
-          <AutoLayout
-            width={8}
-            height={8}
-            cornerRadius={2}
-            stroke={preview.accent.base}
-            strokeWidth={1.5}
-          />
-          <AutoLayout width={36} height={5} cornerRadius={2} fill={preview.text.tertiary} />
-        </AutoLayout>
+        <ThemePreview theme={buildTheme({ scheme, accent })} />
       </AutoLayout>
       <Label
         style={Type.caption}
+        width="fill-parent"
+        horizontalAlignText="center"
         fill={selected ? theme.accent.base : theme.text.tertiary}
       >
         {label}
       </Label>
     </AutoLayout>
+  );
+}
+
+/**
+ * An 80x60 miniature of the widget, drawn with absolutely-positioned bars at
+ * the exact coordinates from the design. Building it from `buildTheme` keeps
+ * the preview honest: it is painted by the same function as the real screen.
+ */
+function ThemePreview({ theme }: { theme: Theme }) {
+  return (
+    <Frame
+      name="UI"
+      width={80}
+      height={60}
+      cornerRadius={Radius.xs}
+      fill={theme.surface.base}
+      stroke={theme.border.default}
+      overflow="hidden"
+    >
+      {/* Header: the input bar and the accent add button. */}
+      <Rectangle x={6} y={8} width={52} height={12} cornerRadius={2} fill={theme.surface.secondary} />
+      <Rectangle x={60} y={8} width={12} height={12} cornerRadius={2} fill={theme.accent.base} />
+
+      {/* An open task, an indented subtask, and a completed one. */}
+      <Rectangle x={6} y={24} width={8} height={8} cornerRadius={1} stroke={theme.accent.base} />
+      <Rectangle x={18} y={27} width={44} height={2} cornerRadius={3} fill={theme.icon} />
+
+      <Rectangle x={14} y={34} width={8} height={8} cornerRadius={1} stroke={theme.accent.base} />
+      <Rectangle x={26} y={37} width={31} height={2} cornerRadius={3} fill={theme.icon} />
+
+      <Rectangle
+        x={6}
+        y={44}
+        width={8}
+        height={8}
+        cornerRadius={1}
+        fill={theme.surface.secondary}
+        stroke={theme.border.default}
+      />
+      <Rectangle x={18} y={47} width={43} height={2} cornerRadius={3} fill={theme.surface.secondary} />
+    </Frame>
   );
 }

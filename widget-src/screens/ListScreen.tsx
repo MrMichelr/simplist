@@ -97,10 +97,10 @@ function EmptyState({ theme, filtered }: { theme: Theme; filtered: boolean }) {
         width="fill-parent"
         spacing={Space[100]}
       >
-        <Label style={Type.body} fill={theme.text.primary} width="fill-parent">
+        <Label style={Type.headline} fill={theme.text.primary} width="fill-parent">
           {copy.title}
         </Label>
-        <Label style={Type.footnote} fill={theme.text.tertiary} width="fill-parent">
+        <Label style={Type.subheadline} fill={theme.text.secondary} width="fill-parent">
           {copy.body}
         </Label>
       </AutoLayout>

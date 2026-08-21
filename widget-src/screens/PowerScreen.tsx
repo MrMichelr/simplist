@@ -10,15 +10,11 @@ import { Surface } from "../components/Surface";
 import { IconSize, Radius, Space, Theme, Type } from "../theme";
 import { WidgetState } from "../state";
 
-/** Power Mode: edit the whole list as plain text. */
+/** Power Mode: edit the whole list as plain text. The card is outlined in accent. */
 export function PowerScreen({ theme, powerDraft, actions }: WidgetState) {
   return (
-    <Surface theme={theme}>
-      <Header
-        theme={theme}
-        title={Strings.title}
-        trailing={<PowerTag theme={theme} />}
-      />
+    <Surface theme={theme} accented>
+      <Header theme={theme} title={Strings.title} trailing={<PowerTag theme={theme} />} />
       <AutoLayout
         name="Container"
         direction="vertical"
@@ -31,9 +27,11 @@ export function PowerScreen({ theme, powerDraft, actions }: WidgetState) {
           placeholder={Strings.power.placeholder}
           width="fill-parent"
           inputBehavior="multiline"
-          fontFamily={Type.mono}
-          fontSize={Type.body.fontSize}
-          lineHeight={Type.body.lineHeight}
+          fontFamily={Type.code.fontFamily}
+          fontSize={Type.code.fontSize}
+          fontWeight={Type.code.fontWeight}
+          lineHeight={Type.code.lineHeight}
+          letterSpacing={Type.code.letterSpacing}
           fill={theme.text.primary}
           placeholderProps={{ fill: theme.text.tertiary, opacity: 1 }}
           inputFrameProps={{
@@ -41,7 +39,7 @@ export function PowerScreen({ theme, powerDraft, actions }: WidgetState) {
             stroke: theme.border.default,
             cornerRadius: Radius.s,
             padding: Space[400],
-            minHeight: 375,
+            height: 375,
           }}
           onTextEditEnd={(event) => actions.setPowerDraft(event.characters)}
         />
@@ -50,6 +48,7 @@ export function PowerScreen({ theme, powerDraft, actions }: WidgetState) {
           width="fill-parent"
           spacing={Space[200]}
           horizontalAlignItems="end"
+          verticalAlignItems="center"
         >
           <TextButton
             theme={theme}
@@ -68,20 +67,22 @@ export function PowerScreen({ theme, powerDraft, actions }: WidgetState) {
   );
 }
 
+/** Label then bolt, on an accent fill — 8/4 padding, 8px radius. */
 function PowerTag({ theme }: { theme: Theme }) {
   return (
     <AutoLayout
       name="Power tag"
-      spacing={Space[50]}
+      spacing={10}
       padding={{ vertical: Space[100], horizontal: Space[200] }}
-      cornerRadius={Radius.xs}
-      fill={theme.accent.tint}
+      cornerRadius={Radius.s}
+      fill={theme.accent.base}
       verticalAlignItems="center"
+      horizontalAlignItems="center"
     >
-      <Icon name="bolt" size={IconSize.s} fill={theme.accent.base} />
-      <Label style={Type.footnote} fill={theme.accent.base}>
+      <Label style={Type.codeSmall} fill={theme.text.onAccent}>
         {Strings.power.tag}
       </Label>
+      <Icon name="bolt" size={IconSize.s} fill={theme.text.onAccent} />
     </AutoLayout>
   );
 }

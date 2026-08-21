@@ -2,11 +2,12 @@
 export const Strings = {
   title: "Todo",
   done: "Done",
+  close: "Close",
 
   empty: {
     nothing: {
       title: "Nothing, what a victory!",
-      body: "Start by typing something to add a new task.",
+      body: "Start by typing something to add a new task!",
     },
     allDone: {
       title: "All caught up.",
@@ -27,7 +28,7 @@ export const Strings = {
     edit: "Edit",
     hideDone: "Hide completed",
     showDone: "Show completed",
-    info: "About",
+    info: "Infos",
     settings: "Settings",
     clear: "Clear all",
   },
@@ -37,7 +38,7 @@ export const Strings = {
     appearance: "Appearance",
     light: "Light",
     dark: "Dark",
-    accent: "Accent color",
+    accent: "Accent Color",
     accentPlaceholder: "#0038FF",
   },
 

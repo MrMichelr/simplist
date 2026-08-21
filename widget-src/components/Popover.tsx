@@ -1,7 +1,7 @@
 const { widget } = figma;
 const { AutoLayout } = widget;
 
-import { Elevation, Radius, Space, Theme } from "../theme";
+import { Elevation500, Elevation600, Radius, Space, Theme } from "../theme";
 
 type Props = {
   theme: Theme;
@@ -9,6 +9,9 @@ type Props = {
   width?: number;
   padding?: WidgetJSX.Padding;
   spacing?: number;
+  cornerRadius?: number;
+  /** The menu sits above the card and carries the heavier Drop Shadow/600. */
+  raised?: boolean;
   x: WidgetJSX.HorizontalConstraint | number;
   y: WidgetJSX.VerticalConstraint | number;
   children?: FigmaDeclarativeNode;
@@ -21,6 +24,8 @@ export function Popover({
   width = 250,
   padding,
   spacing,
+  cornerRadius,
+  raised,
   x,
   y,
   children,
@@ -33,12 +38,12 @@ export function Popover({
       x={x}
       y={y}
       width={width}
-      padding={padding ?? Space[200]}
-      spacing={spacing ?? Space[100]}
-      cornerRadius={Radius.m}
+      padding={padding ?? Space[400]}
+      spacing={spacing ?? Space[600]}
+      cornerRadius={cornerRadius ?? Radius.m}
       fill={theme.surface.base}
       stroke={theme.border.default}
-      effect={Elevation}
+      effect={raised ? Elevation600 : Elevation500}
     >
       {children}
     </AutoLayout>

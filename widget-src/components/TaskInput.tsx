@@ -14,7 +14,7 @@ type Props = {
 };
 
 /**
- * The new-task row: a text field plus the accent add button.
+ * `Main Action`: the text field plus the accent add button, 4px apart.
  *
  * The draft lives in the caller's synced state, not here. Synced-state keys are
  * global to the widget, so a key declared inside a reusable input would be
@@ -22,16 +22,15 @@ type Props = {
  * DefaultTextField and OnlyTextField silently overwrite each other.
  *
  * Clicking the button first blurs the field, so `onTextEditEnd` fires and
- * submits; the click then submits an already-empty value, which the caller
- * discards as blank.
+ * submits; the click then submits an already-empty value, which is discarded.
  */
 export function TaskInput({ theme, value, placeholder, onSubmit, disabled }: Props) {
   return (
     <AutoLayout name="Main Action" width="fill-parent" spacing={Space[100]}>
       <AutoLayout
-        name="Input Container"
+        name="Input"
         width="fill-parent"
-        minHeight={56}
+        height={56}
         verticalAlignItems="center"
         fill={theme.surface.secondary}
         stroke={theme.border.default}
@@ -46,7 +45,7 @@ export function TaskInput({ theme, value, placeholder, onSubmit, disabled }: Pro
             placeholder={placeholder}
             width="fill-parent"
             inputBehavior="wrap"
-            fontFamily={Type.family}
+            fontFamily={Type.body.fontFamily}
             fontSize={Type.body.fontSize}
             fontWeight={Type.body.fontWeight}
             lineHeight={Type.body.lineHeight}

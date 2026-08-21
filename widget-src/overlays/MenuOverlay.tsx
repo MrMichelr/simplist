@@ -1,20 +1,31 @@
 const { widget } = figma;
-const { AutoLayout, Line } = widget;
+const { AutoLayout } = widget;
 
 import { IconName } from "../assets/icons";
 import { Strings } from "../content/strings";
 import { Icon } from "../components/Icon";
 import { Label } from "../components/Text";
 import { Popover } from "../components/Popover";
+import { Separator } from "../components/Separator";
 import { IconSize, Radius, Space, Theme, Type } from "../theme";
 import { WidgetState } from "../state";
 
+/** The dropdown: 4px padding, 8px radius, and the heavier Drop Shadow/600. */
 export function MenuOverlay({ theme, hideDone, actions }: WidgetState) {
   return (
-    <Popover theme={theme} name="Menu" x={{ type: "right", offset: -258 }} y={64}>
+    <Popover
+      theme={theme}
+      name="Menu"
+      raised
+      cornerRadius={Radius.s}
+      padding={Space[100]}
+      spacing={Space[100]}
+      x={{ type: "right", offset: -258 }}
+      y={64}
+    >
       <MenuItem
         theme={theme}
-        icon="checklist"
+        icon="edit"
         label={Strings.menu.edit}
         onClick={() => actions.goTo("edit")}
       />
@@ -27,7 +38,7 @@ export function MenuOverlay({ theme, hideDone, actions }: WidgetState) {
           actions.closeOverlay();
         }}
       />
-      <Line name="Separator" stroke={theme.border.default} length="fill-parent" />
+      <Separator theme={theme} />
       <MenuItem
         theme={theme}
         icon="info.circle"
@@ -36,11 +47,11 @@ export function MenuOverlay({ theme, hideDone, actions }: WidgetState) {
       />
       <MenuItem
         theme={theme}
-        icon="slider"
+        icon="gear"
         label={Strings.menu.settings}
         onClick={() => actions.goTo("settings")}
       />
-      <Line name="Separator" stroke={theme.border.default} length="fill-parent" />
+      <Separator theme={theme} />
       <MenuItem
         theme={theme}
         icon="trash"
@@ -52,6 +63,7 @@ export function MenuOverlay({ theme, hideDone, actions }: WidgetState) {
   );
 }
 
+/** 8px padding all round, 4px radius, 8px between icon and label. */
 function MenuItem({
   theme,
   icon,
@@ -71,10 +83,9 @@ function MenuItem({
     <AutoLayout
       name="Menu Item"
       width="fill-parent"
-      minHeight={40}
       spacing={Space[200]}
-      padding={{ vertical: Space[200], horizontal: Space[300] }}
-      cornerRadius={Radius.s}
+      padding={Space[200]}
+      cornerRadius={Radius.xs}
       verticalAlignItems="center"
       hoverStyle={{ fill: danger ? theme.danger.tint : theme.surface.secondary }}
       onClick={onClick}

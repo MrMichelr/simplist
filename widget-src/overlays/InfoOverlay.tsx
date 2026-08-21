@@ -10,21 +10,23 @@ import { Popover } from "../components/Popover";
 import { IconSize, Radius, Space, Type } from "../theme";
 import { WidgetState } from "../state";
 
+/** 16px padding, 24px between the three blocks. */
 export function InfoOverlay({ theme, actions }: WidgetState) {
   return (
     <Popover
       theme={theme}
-      name="Info"
+      name="Infos"
       x={{ type: "left", offset: -274 }}
       y={0}
       padding={Space[400]}
       spacing={Space[600]}
     >
       <AutoLayout
-        name="Links"
+        name="Heading"
         width="fill-parent"
         spacing={Space[100]}
         horizontalAlignItems="end"
+        verticalAlignItems="center"
       >
         <IconButton
           theme={theme}
@@ -43,7 +45,7 @@ export function InfoOverlay({ theme, actions }: WidgetState) {
       </AutoLayout>
 
       <AutoLayout
-        name="Identity"
+        name="Content"
         direction="vertical"
         width="fill-parent"
         spacing={Space[200]}
@@ -51,21 +53,27 @@ export function InfoOverlay({ theme, actions }: WidgetState) {
       >
         <AutoLayout
           name="Logo"
-          width={64}
-          height={64}
+          padding={Space[200]}
           cornerRadius={Radius.m}
           fill={theme.accent.base}
           horizontalAlignItems="center"
           verticalAlignItems="center"
         >
-          <Icon name="logo" size={48} fill={theme.text.onAccent} />
+          <Icon name="logo" size={IconSize.xl} fill={theme.text.onAccent} />
         </AutoLayout>
-        <Label style={Type.body} fill={theme.text.primary}>
-          {App.name}
-        </Label>
-        <Label style={Type.footnote} fill={theme.text.tertiary}>
-          {`Version ${App.version}`}
-        </Label>
+        <AutoLayout
+          name="Text"
+          direction="vertical"
+          spacing={Space[0]}
+          horizontalAlignItems="center"
+        >
+          <Label style={Type.headline} fill={theme.text.primary}>
+            {App.wordmark}
+          </Label>
+          <Label style={Type.subheadline} fill={theme.text.tertiary}>
+            {`version ${App.version}`}
+          </Label>
+        </AutoLayout>
       </AutoLayout>
 
       <AutoLayout
@@ -82,7 +90,7 @@ export function InfoOverlay({ theme, actions }: WidgetState) {
           theme={theme}
           variant="primary"
           width="fill-parent"
-          label={Strings.done}
+          label={Strings.close}
           onClick={actions.closeOverlay}
         />
       </AutoLayout>

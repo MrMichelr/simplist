@@ -24,6 +24,7 @@ export type WidgetState = {
   /** Parent whose new subtask is being typed, if any. */
   draftParentId: string | null;
   powerDraft: string;
+  scheme: Scheme;
   /** Text sitting in the new-task field. */
   draft: string;
   accent: string | undefined;
@@ -224,6 +225,7 @@ export function useWidgetState(): WidgetState {
     draftParentId,
     powerDraft,
     draft,
+    scheme,
     accent,
     actions,
   };

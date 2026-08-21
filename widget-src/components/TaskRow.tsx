@@ -105,38 +105,47 @@ export function TaskRow(props: TaskRowProps) {
           />
         </AutoLayout>
 
-        {editing ? (
-          <Input
-            name="Title"
-            value={props.content}
-            placeholder="Task"
-            width="fill-parent"
-            inputBehavior="wrap"
-            fontFamily={Type.family}
-            fontSize={Type.body.fontSize}
-            fontWeight={Type.body.fontWeight}
-            lineHeight={Type.body.lineHeight}
-            letterSpacing={Type.body.letterSpacing}
-            fill={theme.text.primary}
-            inputFrameProps={{
-              fill: theme.surface.secondary,
-              cornerRadius: Radius.xs,
-              padding: { vertical: Space[50], horizontal: Space[100] },
-            }}
-            onTextEditEnd={(event) => props.onRename(event.characters)}
-          />
-        ) : (
-          <Label
-            name="Title"
-            width="fill-parent"
-            style={Type.body}
-            strikethrough={done}
-            fill={done ? theme.text.disabled : theme.text.primary}
-            onClick={editable ? props.onStartEditing : props.onToggle}
-          >
-            {props.content}
-          </Label>
-        )}
+        {/* `TaskContent`: a 24px-tall centred box, so a one-line task sits on
+            the checkbox's centreline instead of its top edge. */}
+        <AutoLayout
+          name="TaskContent"
+          width="fill-parent"
+          minHeight={IconSize.m}
+          verticalAlignItems="center"
+        >
+          {editing ? (
+            <Input
+              name="Title"
+              value={props.content}
+              placeholder="Task"
+              width="fill-parent"
+              inputBehavior="wrap"
+              fontFamily={Type.body.fontFamily}
+              fontSize={Type.body.fontSize}
+              fontWeight={Type.body.fontWeight}
+              lineHeight={Type.body.lineHeight}
+              letterSpacing={Type.body.letterSpacing}
+              fill={theme.text.primary}
+              inputFrameProps={{
+                fill: theme.surface.secondary,
+                cornerRadius: Radius.xs,
+                padding: { vertical: Space[50], horizontal: Space[100] },
+              }}
+              onTextEditEnd={(event) => props.onRename(event.characters)}
+            />
+          ) : (
+            <Label
+              name="Title"
+              width="fill-parent"
+              style={Type.body}
+              strikethrough={done}
+              fill={done ? theme.text.disabled : theme.text.primary}
+              onClick={editable ? props.onStartEditing : props.onToggle}
+            >
+              {props.content}
+            </Label>
+          )}
+        </AutoLayout>
       </AutoLayout>
 
       <RowAction {...props} />
