@@ -42,7 +42,8 @@ export function EditScreen({ theme, tasks, editingId, draftParentId, actions }: 
           value=""
           placeholder=""
           disabled
-          onSubmit={() => undefined}
+          onChange={() => undefined}
+          onAdd={() => undefined}
         />
         <AutoLayout
           name="Content"

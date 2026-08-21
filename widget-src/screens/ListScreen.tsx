@@ -40,7 +40,8 @@ export function ListScreen({ theme, tasks, hideDone, draft, editingId, draftPare
           theme={theme}
           value={draft}
           placeholder={Strings.input.placeholder}
-          onSubmit={actions.addTask}
+          onChange={actions.setDraft}
+          onAdd={actions.addDraft}
         />
         {shown.length === 0 ? (
           <EmptyState theme={theme} filtered={tasks.length > 0} />

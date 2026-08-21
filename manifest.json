@@ -1,5 +1,5 @@
 {
-  "name": "SimpList",
+  "name": "Simplist",
   "id": "1370783213790545682",
   "api": "1.0.0",
   "main": "dist/code.js",
@@ -12,6 +12,6 @@
   "widgetApi": "1.0.0",
   "networkAccess": {
     "allowedDomains": ["none"],
-    "reasoning": "SimpList works entirely offline. The hidden iframe is only used to open external links in a new browser tab."
+    "reasoning": "Simplist works entirely offline. The hidden iframe is only used to open external links in a new browser tab."
   }
 }

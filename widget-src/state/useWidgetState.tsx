@@ -1,7 +1,7 @@
 const { widget } = figma;
 const { useSyncedState } = widget;
 
-import { Markdown, Subtask, Task, TaskList, Tasks } from "../core";
+import { Markdown, Subtask, TaskList, Tasks } from "../core";
 import { buildTheme, Scheme, Theme } from "../theme";
 import { Overlay, Screen } from "./screen";
 
@@ -39,8 +39,10 @@ export type Actions = {
   toggleCompact: () => void;
 
   // Tasks
+  /** Stores what was typed in the new-task field. */
   setDraft: (value: string) => void;
-  addTask: (content: string) => void;
+  /** Turns the stored draft into a task and clears the field. */
+  addDraft: () => void;
   toggleTask: (id: string) => void;
   removeTask: (id: string) => void;
   moveTask: (index: number, direction: "up" | "down") => void;
@@ -129,13 +131,9 @@ export function useWidgetState(): WidgetState {
     },
 
     setDraft,
-    addTask: (content) => {
-      if (Tasks.isBlank(content)) {
-        setDraft("");
-        return;
-      }
-      const task: Task = Tasks.createTask(takeId(), content);
-      setTasks((current) => Tasks.add(current, task));
+    addDraft: () => {
+      if (Tasks.isBlank(draft)) return;
+      setTasks((current) => Tasks.add(current, Tasks.createTask(takeId(), draft)));
       setDraft("");
     },
     toggleTask: (id) => setTasks((current) => Tasks.toggle(current, id)),

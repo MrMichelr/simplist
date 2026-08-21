@@ -8,35 +8,45 @@ type Props = {
   theme: Theme;
   value: string;
   placeholder: string;
-  /** Called with the field's text, from both the button and losing focus. */
-  onSubmit: (value: string) => void;
+  /** Stores what was typed. Fires when the field loses focus or Enter is hit. */
+  onChange: (value: string) => void;
+  /** Turns the stored text into a task. */
+  onAdd: () => void;
   disabled?: boolean;
 };
 
 /**
  * `Main Action`: the text field plus the accent add button, 4px apart.
  *
- * The hover border lives on `inputFrameProps`, not on a wrapper: hover applies
- * to whichever node is actually under the pointer, and the Input sits on top of
- * anything wrapping it, so a wrapper's hoverStyle would never fire over the
- * text area itself.
+ * Committing and adding are deliberately separate. `onTextEditEnd` is the only
+ * event the Input exposes and it cannot tell "I pressed Enter" from "I clicked
+ * away", so adding on that event meant a task appeared whenever focus left the
+ * field — and meant the typed text could never outlive a re-render, because it
+ * was consumed the moment it arrived. Editing now stores the text; the button
+ * turns it into a task.
  *
- * The design's Focus state is not reachable. `onTextEditEnd` is the only event
- * the Input exposes — nothing fires when editing begins — so the widget cannot
- * know the field is focused.
+ * The design's Focus state is unreachable for the same reason: nothing fires
+ * when editing begins, so the widget cannot know the field is focused.
  *
  * The draft lives in the caller's synced state, not here. Synced-state keys are
  * global to the widget, so a key declared inside a reusable input would be
  * shared by every instance of it — the collision that made v3's
  * DefaultTextField and OnlyTextField silently overwrite each other.
  */
-export function TaskInput({ theme, value, placeholder, onSubmit, disabled }: Props) {
+export function TaskInput({
+  theme,
+  value,
+  placeholder,
+  onChange,
+  onAdd,
+  disabled,
+}: Props) {
   const frame = {
     fill: theme.surface.secondary,
     stroke: theme.border.default,
     cornerRadius: Radius.s,
     padding: { vertical: Space[400], horizontal: Space[600] },
-    height: 56,
+    minHeight: 56,
   } as const;
 
   return (
@@ -62,7 +72,7 @@ export function TaskInput({ theme, value, placeholder, onSubmit, disabled }: Pro
             verticalAlignItems: "center",
             hoverStyle: { stroke: theme.border.strong },
           }}
-          onTextEditEnd={(event) => onSubmit(event.characters)}
+          onTextEditEnd={(event) => onChange(event.characters)}
         />
       )}
       <IconButton
@@ -71,7 +81,7 @@ export function TaskInput({ theme, value, placeholder, onSubmit, disabled }: Pro
         size="l"
         variant="primary"
         disabled={disabled}
-        onClick={() => onSubmit(value)}
+        onClick={onAdd}
       />
     </AutoLayout>
   );
