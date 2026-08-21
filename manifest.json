@@ -1,21 +1,17 @@
 {
-  "name": "SimpList",
+  "name": "Simplist",
   "id": "1370783213790545682",
   "api": "1.0.0",
   "main": "dist/code.js",
-  "ui": "widget-src/pages/ui.html",
+  "ui": "dist/ui.html",
   "capabilities": [],
   "enableProposedApi": false,
   "documentAccess": "dynamic-page",
-  "editorType": [
-    "figma",
-    "figjam"
-  ],
+  "editorType": ["figma", "figjam"],
   "containsWidget": true,
   "widgetApi": "1.0.0",
   "networkAccess": {
-    "allowedDomains": [
-      "none"
-    ]
+    "allowedDomains": ["none"],
+    "reasoning": "Simplist works entirely offline. The hidden iframe is only used to open external links in a new browser tab."
   }
 }

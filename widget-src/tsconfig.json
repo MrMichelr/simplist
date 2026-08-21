@@ -3,14 +3,17 @@
     "jsx": "react",
     "jsxFactory": "figma.widget.h",
     "jsxFragmentFactory": "figma.widget.Fragment",
-    "target": "es2016",
-    "lib": [
-      "es2016"
-    ],
+    "target": "es2017",
+    "lib": ["es2017"],
     "strict": true,
-    "typeRoots": [
-      "../node_modules/@types",
-      "../node_modules/@figma"
-    ]
-  }
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "exactOptionalPropertyTypes": false,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "typeRoots": ["../node_modules/@types", "../node_modules/@figma"]
+  },
+  "include": ["**/*.ts", "**/*.tsx"]
 }

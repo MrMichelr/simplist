@@ -1,225 +1,86 @@
-/!* Michel Rodriguez ⓒ 2024 - SimpList */;
-// Simplist is a simple To Do List for Figma and Figjam
+/* SimpList — a simple to-do list for Figma and FigJam. © Michel Rodriguez */
 
 const { widget } = figma;
-const { useSyncedState, usePropertyMenu } = widget;
+const { AutoLayout, usePropertyMenu } = widget;
 
-// Imports
-import { ColorPalette } from "./constants";
-import { iconLibrary } from "./models/IconLibrary";
-import { EditPage } from "./pages/edit/EditPage";
-import { MainPage } from "./pages/main/MainPage";
-import { CompactPage } from "./pages/main/CompactPage";
-import { PowerModePage } from "./pages/powerMode/PowerModePage";
-import { SettingsPage } from "./pages/settings/SettingsPage";
-import { ModalContainer } from "./views/containers/ModalContainer";
-import { Task } from "./models/Task";
+import { icon } from "./assets/icons";
+import { Strings } from "./content/strings";
+import { AccentOverlay } from "./overlays/AccentOverlay";
+import { InfoOverlay } from "./overlays/InfoOverlay";
+import { MenuOverlay } from "./overlays/MenuOverlay";
+import { CompactScreen } from "./screens/CompactScreen";
+import { EditScreen } from "./screens/EditScreen";
+import { ListScreen } from "./screens/ListScreen";
+import { PowerScreen } from "./screens/PowerScreen";
+import { SettingsScreen } from "./screens/SettingsScreen";
+import { useWidgetState, WidgetState } from "./state";
 
-// Components
+function SimpList() {
+  // --- Hooks -------------------------------------------------------------
+  // Every hook runs here, unconditionally, before any branching. v3 placed
+  // usePropertyMenu after three early returns, so the property menu silently
+  // vanished in Edit, Settings and Power Mode.
+  const state = useWidgetState();
+  const { screen, actions } = state;
 
-/* Main function that handle the whole Widget */
-function Main() {
-  // State Machine
-  const [isHideCompleted, setHideCompleted] = useSyncedState(
-    "isHideCompleted",
-    false
-  );
-  const [powerMode, setPowerMode] = useSyncedState("powerMode", false);
-  const [editModeOpen, setEditModeOpen] = useSyncedState("editModeOpen", false);
-  const [settingsModalOpen, setSettingsModalOpen] = useSyncedState(
-    "settingsModalOpen",
-    false
-  );
-  const [infoModalOpen, setInfoModalOpen] = useSyncedState(
-    "infoModalOpen",
-    false
-  );
-  const [menuOpen, setMenuOpen] = useSyncedState("MenuOpen", false);
-  const [colorModalOpen, setColorModalOpen] = useSyncedState(
-    "ColorModalOpen",
-    false
-  );
-  const [isCompactMode, setIsCompactMode] = useSyncedState(
-    "isCompactMode",
-    false
-  );
-
-  // Colors
-  const [lightMode, setLightMode] = useSyncedState("lightMode", true);
-  const [color, setColor] = useSyncedState(
-    "color",
-    new ColorPalette(lightMode)
-  );
-  const [customAccentColor, setCustomAccentColor] = useSyncedState(
-    "customAccentColor",
-    undefined as string | undefined
-  );
-
-  // Tasks
-  const [tasks, setTasks] = useSyncedState("tasks", [] as Task[]);
-
-  // Power Mode
-  const [powerModeInput, setPowerModeInput] = useSyncedState(
-    "powerModeInput",
-    ""
-  );
-  const [powerModeInitialized, setPowerModeInitialized] = useSyncedState(
-    "powerModeInitialized",
-    false
-  );
-
-  // Open Setting View
-  if (settingsModalOpen) {
-    return (
-      <SettingsPage
-        setColor={setColor}
-        customAccentColor={customAccentColor}
-        color={color}
-        lightMode={{
-          current: lightMode,
-          set: setLightMode,
-        }}
-        ModalState={settingsModalOpen}
-        setModalState={setSettingsModalOpen}
-        colorModalOpen={colorModalOpen}
-        setColorModalOpen={setColorModalOpen}
-        onColorChange={(newColor) => {
-          setCustomAccentColor(newColor);
-          setColor(new ColorPalette(lightMode, newColor));
-        }}
-      />
-    );
-  }
-  // Open Edit View
-  if (editModeOpen) {
-    return (
-      <EditPage
-        color={color}
-        ModalState={editModeOpen}
-        setModalState={setEditModeOpen}
-        tasks={tasks}
-        setTask={setTasks}
-        isHideCompleted={isHideCompleted}
-      />
-    );
-  }
-  // Open PowerMode View
-  if (powerMode) {
-    try {
-      return (
-        <PowerModePage
-          color={color}
-          ModalState={powerMode}
-          setModalState={setPowerMode}
-          tasks={tasks}
-          setTasks={(newTasks) => {
-            setTasks(newTasks);
-          }}
-          powerModeInput={powerModeInput}
-          setPowerModeInput={setPowerModeInput}
-          powerModeInitialized={powerModeInitialized}
-          setPowerModeInitialized={setPowerModeInitialized}
-        />
-      );
-    } catch (error) {
-      console.error("Error rendering PowerModePage:", error);
-      setPowerMode(false);
-      return null; // or return a fallback UI
-    }
-  }
+  const collapsed = screen === "compact";
 
   usePropertyMenu(
     [
       {
         itemType: "action",
-        icon: iconLibrary("bolt", "#FFF"),
-        tooltip: "Power Mode",
-        propertyName: "powerMode",
+        propertyName: "power",
+        tooltip: Strings.propertyMenu.power,
+        icon: icon("bolt", "#FFF"),
       },
       {
         itemType: "action",
-        tooltip: "Compact Mode",
-        propertyName: "compactMode",
-        icon: iconLibrary(
-          isCompactMode ? "chevron.down" : "chevron.up",
-          "#FFF"
-        ),
+        propertyName: "compact",
+        tooltip: collapsed ? Strings.propertyMenu.expand : Strings.propertyMenu.collapse,
+        icon: icon(collapsed ? "chevron.down" : "chevron.up", "#FFF"),
       },
     ],
     ({ propertyName }) => {
-      if (propertyName === "powerMode") {
-        setPowerMode(true);
-      }
-      // Ajout de la gestion du toggle compact
-      if (propertyName === "compactMode") {
-        setIsCompactMode(!isCompactMode);
-      }
+      if (propertyName === "power") actions.openPowerMode();
+      if (propertyName === "compact") actions.toggleCompact();
     }
   );
 
-  try {
-    if (isCompactMode) {
-      return (
-        <ModalContainer
-          color={color}
-          setTask={setTasks}
-          isHideCompleted={isHideCompleted}
-          setHideCompleted={setHideCompleted}
-          menuOpen={menuOpen}
-          setMenuOpen={setMenuOpen}
-          editModeOpen={editModeOpen}
-          setEditModeOpen={setEditModeOpen}
-          infoModalOpen={infoModalOpen}
-          setInfoModalOpen={setInfoModalOpen}
-          settingsModalOpen={settingsModalOpen}
-          setSettingsModalOpen={setSettingsModalOpen}
-          colorModalOpen={colorModalOpen}
-          setColorModalOpen={setColorModalOpen}
-          setPowerModeInput={setPowerModeInput}
-          setPowerModeInitialized={setPowerModeInitialized}
-        >
-          <CompactPage
-            color={color}
-            menuOpen={menuOpen}
-            setMenuOpen={setMenuOpen}
-            tasks={tasks}
-          />
-        </ModalContainer>
-      );
-    }
-    return (
-      <ModalContainer
-        color={color}
-        setTask={setTasks}
-        isHideCompleted={isHideCompleted}
-        setHideCompleted={setHideCompleted}
-        menuOpen={menuOpen}
-        setMenuOpen={setMenuOpen}
-        editModeOpen={editModeOpen}
-        setEditModeOpen={setEditModeOpen}
-        infoModalOpen={infoModalOpen}
-        setInfoModalOpen={setInfoModalOpen}
-        settingsModalOpen={settingsModalOpen}
-        setSettingsModalOpen={setSettingsModalOpen}
-        colorModalOpen={colorModalOpen}
-        setColorModalOpen={setColorModalOpen}
-        setPowerModeInput={setPowerModeInput}
-        setPowerModeInitialized={setPowerModeInitialized}
-      >
-        <MainPage
-          color={color}
-          menuOpen={menuOpen}
-          setMenuOpen={setMenuOpen}
-          tasks={tasks}
-          setTask={setTasks}
-          isHideCompleted={isHideCompleted}
-        />
-      </ModalContainer>
-    );
-  } catch (error) {
-    console.error("Error rendering main UI:", error);
-    return null; // or return a fallback UI
+  // --- Render ------------------------------------------------------------
+  return (
+    <AutoLayout name="SimpList" overflow="visible">
+      <Screen {...state} />
+      <Overlay {...state} />
+    </AutoLayout>
+  );
+}
+
+function Screen(state: WidgetState) {
+  switch (state.screen) {
+    case "compact":
+      return <CompactScreen {...state} />;
+    case "edit":
+      return <EditScreen {...state} />;
+    case "settings":
+      return <SettingsScreen {...state} />;
+    case "power":
+      return <PowerScreen {...state} />;
+    case "list":
+      return <ListScreen {...state} />;
   }
 }
 
-widget.register(Main);
+function Overlay(state: WidgetState) {
+  switch (state.overlay) {
+    case "menu":
+      return <MenuOverlay {...state} />;
+    case "info":
+      return <InfoOverlay {...state} />;
+    case "accent":
+      return <AccentOverlay {...state} />;
+    case null:
+      return null;
+  }
+}
+
+widget.register(SimpList);
