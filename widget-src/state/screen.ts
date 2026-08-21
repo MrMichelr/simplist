@@ -1,18 +1,15 @@
 /**
  * The widget shows exactly one screen at a time.
  *
- * V3 tracked this with five independent booleans, which allowed impossible
- * combinations (Edit and Settings both open). A single tagged value makes
+ * v3 tracked this with five independent booleans, which allowed impossible
+ * combinations (Edit and Settings open at once). A single tagged value makes
  * those states unrepresentable.
  */
 export type Screen = "list" | "compact" | "edit" | "settings" | "power";
 
-/**
- * Overlays float above the current screen. Only one can be open at a time,
- * and `null` means none.
- */
+/** Overlays float above the current screen; `null` means none is open. */
 export type Overlay = "menu" | "info" | "accent" | null;
 
-/** Screens that are entered from the property menu rather than the overlay menu. */
-export const isFullScreen = (screen: Screen): boolean =>
-  screen === "edit" || screen === "settings" || screen === "power";
+/** Screens that render the task list rather than a form. */
+export const showsList = (screen: Screen): boolean =>
+  screen === "list" || screen === "edit";

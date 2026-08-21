@@ -1,15 +1,26 @@
-/** All user-facing copy. Single place to review wording or add a translation. */
+/** All user-facing copy. One place to review wording or add a translation. */
 export const Strings = {
   title: "Todo",
+  done: "Done",
 
   empty: {
-    title: "Nothing left. What a victory.",
-    body: "Type something above to add your first task.",
+    nothing: {
+      title: "Nothing, what a victory!",
+      body: "Start by typing something to add a new task.",
+    },
+    allDone: {
+      title: "All caught up.",
+      body: "Completed tasks are hidden. Show them again from the menu.",
+    },
   },
 
   input: {
     placeholder: "Add a new task",
-    error: "Enter some text to add a task.",
+    subtask: "New subtask",
+  },
+
+  edit: {
+    title: "Edit",
   },
 
   menu: {
@@ -26,14 +37,13 @@ export const Strings = {
     appearance: "Appearance",
     light: "Light",
     dark: "Dark",
-    accent: "Accent colour",
-    accentPlaceholder: "Enter a hex colour",
-    accentInvalid: "Not a valid hex colour.",
+    accent: "Accent color",
+    accentPlaceholder: "#0038FF",
   },
 
   power: {
-    title: "Power Mode",
-    placeholder: "[ ] A task\n[x] A completed task",
+    tag: "Power",
+    placeholder: "[ ] A task\n  [x] A completed subtask",
     save: "Save",
     cancel: "Cancel",
   },
@@ -43,6 +53,4 @@ export const Strings = {
     expand: "Expand",
     collapse: "Collapse",
   },
-
-  done: "Done",
 } as const;

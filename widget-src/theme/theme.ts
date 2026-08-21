@@ -1,87 +1,100 @@
 import { readableOn, shade } from "./color";
-import { DEFAULT_ACCENT, Palette } from "./tokens";
+import { DEFAULT_ACCENT, Raw } from "./tokens";
 
 /**
  * The resolved colour set handed to every component.
  *
- * This is DERIVED state: it is recomputed on each render from `ThemeConfig`
- * and is deliberately never stored in synced state, so the theme can never
- * drift out of sync with the settings that produced it.
+ * DERIVED state: rebuilt on each render from `ThemeConfig`, never stored in
+ * synced state, so it cannot drift out of sync with the settings behind it.
+ *
+ * Names mirror the Figma variables (`color-background-surface` ->
+ * `surface.base`, `color-text-surface-tertiary` -> `text.tertiary`).
  */
 export type Theme = {
-  scheme: "light" | "dark";
-  neutral: Ramp;
-  danger: Ramp;
-  surface: { base: string; raised: string; sunken: string };
-  content: { primary: string; secondary: string; onAccent: string };
-  accent: { base: string; hover: string };
+  scheme: Scheme;
+  surface: {
+    /** `color-background-surface` — the widget card. */
+    base: string;
+    /** `color-background-surface-secondary` — inputs, editing checkboxes. */
+    secondary: string;
+    /** `color-background-surface-tertiary` — disabled fills. */
+    tertiary: string;
+  };
+  border: {
+    /** `color-border-defaut` — separators, input outlines. */
+    default: string;
+    disabled: string;
+  };
+  text: {
+    /** `color-text-surface` — task text, headings. */
+    primary: string;
+    /** `color-text-surface-tertiary` — placeholders, secondary copy. */
+    tertiary: string;
+    /** `color-text-disabled` — completed task text. */
+    disabled: string;
+    /** Foreground on top of an accent fill. */
+    onAccent: string;
+  };
+  accent: {
+    base: string;
+    /** Hover fill for accent surfaces. */
+    hover: string;
+    /** `color-background-brand-tertiary` — the glyph inside the accent button. */
+    tint: string;
+  };
+  danger: {
+    base: string;
+    tint: string;
+  };
+  /** Neutral icon colour (`color-background-neutral`). */
+  icon: string;
 };
 
-type Ramp = {
-  lowest: string;
-  lower: string;
-  low: string;
-  medium: string;
-  high: string;
-  higher: string;
-  highest: string;
-};
+export type Scheme = "light" | "dark";
 
 export type ThemeConfig = {
-  scheme: "light" | "dark";
-  /** Hex accent colour. Falls back to the default when absent or malformed. */
+  scheme: Scheme;
+  /** Hex accent. Falls back to the default when absent or malformed. */
   accent?: string;
 };
 
-const N = Palette.neutral;
-const R = Palette.red;
-
 /** Picks `l` in light mode and `d` in dark mode. */
-const pick = <T,>(light: boolean, l: T, d: T): T => (light ? l : d);
+const pick = <T>(light: boolean, l: T, d: T): T => (light ? l : d);
 
 export function buildTheme(config: ThemeConfig): Theme {
   const light = config.scheme === "light";
   const accent = config.accent ?? DEFAULT_ACCENT;
 
-  const neutral: Ramp = {
-    lowest: pick(light, N[100], N[900]),
-    lower: pick(light, N[200], N[800]),
-    low: pick(light, N[300], N[600]),
-    medium: N[500],
-    high: pick(light, N[700], N[300]),
-    higher: pick(light, N[800], N[200]),
-    highest: pick(light, N[900], N[100]),
-  };
-
-  const danger: Ramp = {
-    lowest: pick(light, R[50], R[950]),
-    lower: pick(light, R[200], R[800]),
-    low: pick(light, R[300], R[700]),
-    medium: pick(light, R[500], R[400]),
-    high: pick(light, R[700], R[300]),
-    higher: pick(light, R[800], R[200]),
-    highest: pick(light, R[900], R[100]),
-  };
-
-  const accentBase = pick(light, accent, shade(accent, 30));
+  // The Figma library only defines light mode. Dark is derived by inverting the
+  // neutral ramp against the same steps, keeping the contrast relationships.
+  const accentBase = pick(light, accent, shade(accent, 25));
 
   return {
     scheme: config.scheme,
-    neutral,
-    danger,
     surface: {
-      base: pick(light, N[0], N[950]),
-      raised: pick(light, N[0], N[900]),
-      sunken: neutral.lowest,
+      base: pick(light, Raw.white, Raw.gray950),
+      secondary: pick(light, Raw.gray100, Raw.gray900),
+      tertiary: pick(light, Raw.gray300, Raw.slate700),
     },
-    content: {
-      primary: pick(light, N[900], N[0]),
-      secondary: pick(light, N[500], N[400]),
-      onAccent: readableOn(accentBase, N[0], N[900]),
+    border: {
+      default: pick(light, Raw.gray200, Raw.slate700),
+      disabled: pick(light, Raw.gray400, Raw.slate700),
+    },
+    text: {
+      primary: pick(light, Raw.slate950, Raw.white),
+      tertiary: Raw.gray400,
+      disabled: pick(light, Raw.gray300, Raw.slate700),
+      onAccent: readableOn(accentBase, Raw.white, Raw.slate950),
     },
     accent: {
       base: accentBase,
-      hover: pick(light, shade(accent, -20), shade(accent, 20)),
+      hover: pick(light, shade(accent, -20), shade(accent, 45)),
+      tint: pick(light, Raw.brandTint, Raw.white),
     },
+    danger: {
+      base: Raw.danger,
+      tint: pick(light, Raw.dangerTint, "#2A0000"),
+    },
+    icon: pick(light, Raw.slate700, Raw.gray300),
   };
 }

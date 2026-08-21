@@ -1,17 +1,29 @@
 /* SimpList — a simple to-do list for Figma and FigJam. © Michel Rodriguez */
 
 const { widget } = figma;
-const { AutoLayout, Text, usePropertyMenu } = widget;
+const { AutoLayout, usePropertyMenu } = widget;
 
-import { iconLibrary } from "./assets/icons";
+import { icon } from "./assets/icons";
 import { Strings } from "./content/strings";
-import { useWidgetState } from "./state";
-import { Type } from "./theme";
+import { AccentOverlay } from "./overlays/AccentOverlay";
+import { InfoOverlay } from "./overlays/InfoOverlay";
+import { MenuOverlay } from "./overlays/MenuOverlay";
+import { CompactScreen } from "./screens/CompactScreen";
+import { EditScreen } from "./screens/EditScreen";
+import { ListScreen } from "./screens/ListScreen";
+import { PowerScreen } from "./screens/PowerScreen";
+import { SettingsScreen } from "./screens/SettingsScreen";
+import { useWidgetState, WidgetState } from "./state";
 
 function SimpList() {
   // --- Hooks -------------------------------------------------------------
-  // Every hook runs here, unconditionally, before any branching below.
-  const { theme, screen, actions } = useWidgetState();
+  // Every hook runs here, unconditionally, before any branching. v3 placed
+  // usePropertyMenu after three early returns, so the property menu silently
+  // vanished in Edit, Settings and Power Mode.
+  const state = useWidgetState();
+  const { screen, actions } = state;
+
+  const collapsed = screen === "compact";
 
   usePropertyMenu(
     [
@@ -19,19 +31,13 @@ function SimpList() {
         itemType: "action",
         propertyName: "power",
         tooltip: Strings.propertyMenu.power,
-        icon: iconLibrary("bolt", "#FFF"),
+        icon: icon("bolt", "#FFF"),
       },
       {
         itemType: "action",
         propertyName: "compact",
-        tooltip:
-          screen === "compact"
-            ? Strings.propertyMenu.expand
-            : Strings.propertyMenu.collapse,
-        icon: iconLibrary(
-          screen === "compact" ? "chevron.down" : "chevron.up",
-          "#FFF"
-        ),
+        tooltip: collapsed ? Strings.propertyMenu.expand : Strings.propertyMenu.collapse,
+        icon: icon(collapsed ? "chevron.down" : "chevron.up", "#FFF"),
       },
     ],
     ({ propertyName }) => {
@@ -41,27 +47,40 @@ function SimpList() {
   );
 
   // --- Render ------------------------------------------------------------
-  // TODO(v4): replace this scaffold with the real screens once the V4 mockups
-  // are wired up. The routing shape is final; only the leaves change.
   return (
-    <AutoLayout
-      name="SimpList"
-      direction="vertical"
-      fill={theme.surface.base}
-      stroke={theme.neutral.lowest}
-      cornerRadius={12}
-      padding={24}
-      spacing={8}
-      width={393}
-    >
-      <Text fontFamily={Type.family} {...Type.headingStrong} fill={theme.content.primary}>
-        {Strings.title}
-      </Text>
-      <Text fontFamily={Type.family} {...Type.footnote} fill={theme.content.secondary}>
-        {`screen: ${screen}`}
-      </Text>
+    <AutoLayout name="SimpList" overflow="visible">
+      <Screen {...state} />
+      <Overlay {...state} />
     </AutoLayout>
   );
+}
+
+function Screen(state: WidgetState) {
+  switch (state.screen) {
+    case "compact":
+      return <CompactScreen {...state} />;
+    case "edit":
+      return <EditScreen {...state} />;
+    case "settings":
+      return <SettingsScreen {...state} />;
+    case "power":
+      return <PowerScreen {...state} />;
+    case "list":
+      return <ListScreen {...state} />;
+  }
+}
+
+function Overlay(state: WidgetState) {
+  switch (state.overlay) {
+    case "menu":
+      return <MenuOverlay {...state} />;
+    case "info":
+      return <InfoOverlay {...state} />;
+    case "accent":
+      return <AccentOverlay {...state} />;
+    case null:
+      return null;
+  }
 }
 
 widget.register(SimpList);

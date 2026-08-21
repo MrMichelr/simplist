@@ -1,51 +1,63 @@
-/** Design tokens. Pure data — no Figma API, no state. */
+/**
+ * Design tokens, mirroring the Figma library for SimpList v4.
+ *
+ * Names follow the Figma variables so a token can be traced back to the design
+ * file: `size-space-300` -> `Space[300]`, `border-radius-s` -> `Radius.s`.
+ */
 
-export const Spacing = {
-  none: 0,
-  xxs: 4,
-  xs: 8,
-  s: 12,
-  m: 16,
-  l: 24,
-  xl: 28,
-  xxl: 32,
+/** `size-space-*`. The scale is sparse on purpose — these are the only steps used. */
+export const Space = {
+  0: 0,
+  50: 2,
+  100: 4,
+  150: 6,
+  200: 8,
+  300: 12,
+  400: 16,
+  600: 24,
 } as const;
 
+/** `border-radius-*` */
 export const Radius = {
-  s: 4,
-  m: 8,
-  l: 12,
+  xs: 4,
+  s: 8,
+  m: 16,
 } as const;
 
-export const Palette = {
-  neutral: {
-    0: "#FFFFFF",
-    50: "#FBFCFC",
-    100: "#F0F2F3",
-    200: "#DFE3E5",
-    300: "#C9CFD2",
-    400: "#B0B6BC",
-    500: "#959CA3",
-    600: "#7B8289",
-    700: "#62696E",
-    800: "#494F53",
-    900: "#303538",
-    950: "#181B1C",
-    1000: "#000000",
-  },
-  red: {
-    50: "#FFEEEE",
-    100: "#FFBFC6",
-    200: "#FF7F96",
-    300: "#FD406B",
-    400: "#EB114E",
-    500: "#E30044",
-    600: "#CD002E",
-    700: "#AA001B",
-    800: "#80000C",
-    900: "#550002",
-    950: "#2A0000",
-  },
+/** `size-icon-*` */
+export const IconSize = {
+  xs: 12,
+  s: 16,
+  m: 24,
+  l: 32,
+} as const;
+
+/** `size-depth-*` */
+const Depth = { 100: 4, 200: 8, 400: 16 } as const;
+
+/** The widget's fixed canvas width, from the Figma frames (400 - 2x24 padding). */
+export const WIDGET_WIDTH = 400;
+
+/* -------------------------------------------------------------------------- */
+/* Colour                                                                     */
+/* -------------------------------------------------------------------------- */
+
+/** Raw palette. Prefer the semantic names on `Theme` in application code. */
+export const Raw = {
+  white: "#FFFFFF",
+  slate950: "#0F172B",
+  slate700: "#314158",
+  gray100: "#F3F4F6",
+  gray200: "#E5E7EB",
+  gray300: "#D1D5DC",
+  gray400: "#99A1AF",
+  gray900: "#111827",
+  gray950: "#030712",
+  black05: "#0C0C0C0D",
+  brand: "#0038FF",
+  brandTint: "#EEF6FF",
+  danger: "#E30044",
+  dangerTint: "#FFEEEE",
 } as const;
 
 /** Accent presets offered in the colour picker. */
@@ -58,42 +70,95 @@ export const AccentPresets = {
   red: "#F21363",
   gray: "#6B6B6B",
   black: "#000000",
-  white: "#FFFFFF",
 } as const;
 
 export const DEFAULT_ACCENT = AccentPresets.blue;
 
-const Size = { 100: 11, 200: 13, 300: 17, 400: 24 } as const;
-const Leading = { tight: "120%", normal: "140%" } as const;
-const Weight = {
-  regular: 400,
-  medium: 500,
-  semibold: 600,
-} as const satisfies Record<string, WidgetJSX.FontWeight>;
+/* -------------------------------------------------------------------------- */
+/* Typography                                                                 */
+/* -------------------------------------------------------------------------- */
 
 export type TextStyle = {
   fontSize: number;
   fontWeight: WidgetJSX.FontWeight;
   lineHeight: string;
+  letterSpacing: string;
 };
 
 /**
- * Typography scale. Each entry spreads straight onto a <Text>:
- *   <Text {...Type.body} />
+ * Figma stores letter-spacing as a percentage of the font size, and the widget
+ * API accepts the same percentage string, so these carry across unchanged.
  */
 export const Type = {
   family: "Inter",
   mono: "IBM Plex Mono",
 
-  heading: { fontSize: Size[400], fontWeight: Weight.medium, lineHeight: Leading.tight },
-  headingStrong: { fontSize: Size[400], fontWeight: Weight.semibold, lineHeight: Leading.tight },
-
-  body: { fontSize: Size[300], fontWeight: Weight.medium, lineHeight: Leading.normal },
-  bodyStrong: { fontSize: Size[300], fontWeight: Weight.semibold, lineHeight: Leading.normal },
-
-  footnote: { fontSize: Size[200], fontWeight: Weight.medium, lineHeight: Leading.tight },
-  footnoteStrong: { fontSize: Size[200], fontWeight: Weight.semibold, lineHeight: Leading.tight },
-
-  caption: { fontSize: Size[100], fontWeight: Weight.medium, lineHeight: Leading.tight },
-  captionStrong: { fontSize: Size[100], fontWeight: Weight.semibold, lineHeight: Leading.tight },
+  /** Title 1 / Emphasized — screen headings. */
+  title: {
+    fontSize: 28,
+    fontWeight: 700,
+    lineHeight: "120%",
+    letterSpacing: "-3%",
+  },
+  /** Body / Normal — task text and most labels. */
+  body: {
+    fontSize: 17,
+    fontWeight: 400,
+    lineHeight: "130%",
+    letterSpacing: "-2.5%",
+  },
+  /** Callout / Normal — buttons. */
+  callout: {
+    fontSize: 16,
+    fontWeight: 500,
+    lineHeight: "135%",
+    letterSpacing: "-2%",
+  },
+  /** Footnote — secondary copy. */
+  footnote: {
+    fontSize: 13,
+    fontWeight: 400,
+    lineHeight: "130%",
+    letterSpacing: "-1%",
+  },
+  /** Caption — the copyright line. */
+  caption: {
+    fontSize: 11,
+    fontWeight: 400,
+    lineHeight: "120%",
+    letterSpacing: "0%",
+  },
 } satisfies { family: string; mono: string } & Record<string, TextStyle | string>;
+
+/* -------------------------------------------------------------------------- */
+/* Effects                                                                    */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * `Drop Shadow/500`. Two stacked shadows, as in the Figma effect style.
+ *
+ * Figma's widget best practices flag shadows as expensive to render, so this is
+ * the only elevation in the system and it is applied once per surface.
+ */
+export const Elevation: WidgetJSX.Effect[] = [
+  {
+    type: "drop-shadow",
+    color: Raw.black05,
+    offset: { x: 0, y: Depth[200] },
+    blur: Depth[400],
+    spread: 0,
+    blendMode: "normal",
+    visible: true,
+    showShadowBehindNode: false,
+  },
+  {
+    type: "drop-shadow",
+    color: Raw.black05,
+    offset: { x: 0, y: Depth[100] },
+    blur: Depth[100],
+    spread: 0,
+    blendMode: "normal",
+    visible: true,
+    showShadowBehindNode: false,
+  },
+];

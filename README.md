@@ -22,9 +22,24 @@ widget-src/
   state/          All synced state and the actions that mutate it.
   core/           Task model and pure list operations. No Figma API.
   theme/          Design tokens and the theme builder. Pure functions.
+  components/     Design-system pieces shared across screens.
+  screens/        One file per screen; each takes the whole WidgetState.
+  overlays/       Floating panels: menu, about, accent picker.
   content/        User-facing strings and app metadata.
-  assets/         Icons and illustrations.
+  assets/         Icons and illustrations, as colour-swappable SVG strings.
 ```
+
+## Design source
+
+The UI comes from the [SimpList v4 Figma file][figma]. Tokens in `theme/tokens.ts`
+mirror the Figma variables by name (`size-space-300` -> `Space[300]`), so a value
+can be traced back to the design file.
+
+Icons and illustrations are exported vectors, inlined as template strings with a
+colour placeholder. They cannot be loaded from a URL: the manifest declares no
+network access, and inlining is what lets a single glyph follow the theme.
+
+[figma]: https://www.figma.com/design/cyNWRwGlsQCmnbQ9KxNi2s/Simplist
 
 Three rules keep this codebase out of trouble:
 
@@ -39,5 +54,10 @@ Three rules keep this codebase out of trouble:
 
 State must also never be updated while rendering — only from event handlers or
 `useEffect`. See [Figma's widget state docs][state].
+
+Hover feedback is limited by the API: `hoverStyle` accepts `fill`, `stroke` and
+`opacity` and nothing else. Controls that appear on hover — the reorder arrows —
+therefore sit in the layout permanently at `opacity: 0`, which is also what keeps
+rows from shifting as the pointer moves.
 
 [state]: https://developers.figma.com/docs/widgets/widget-state/
