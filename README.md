@@ -1,36 +1,43 @@
-Below are the steps to get your widget running. You can also find instructions at:
+# SimpList
 
-https://www.figma.com/widget-docs/setup-guide/
+A simple to-do list widget for Figma and FigJam.
 
-This widget template uses TypeScript and NPM, two standard tools in creating JavaScript applications.
+## Getting started
 
-First, download Node.js which comes with NPM. This will allow you to install TypeScript and other
-libraries. You can find the download link here:
-
-https://nodejs.org/en/download/
-
-Next, install TypeScript, esbuild and the latest type definitions by running:
-
+```bash
 npm install
+npm run dev     # rebuild on save, with sourcemaps
+npm run build   # minified production bundle
+npm run check   # typecheck + lint
+```
 
-If you are familiar with JavaScript, TypeScript will look very familiar. In fact, valid JavaScript code
-is already valid Typescript code.
+Then in Figma: **Plugins → Development → Import plugin from manifest…** and pick
+`manifest.json`.
 
-TypeScript adds type annotations to variables. This allows code editors such as Visual Studio Code
-to provide information about the Figma API while you are writing code, as well as help catch bugs
-you previously didn't notice.
+## Architecture
 
-For more information, visit https://www.typescriptlang.org/
+```
+widget-src/
+  code.tsx        Entry point. Calls every hook, then routes to a screen.
+  state/          All synced state and the actions that mutate it.
+  core/           Task model and pure list operations. No Figma API.
+  theme/          Design tokens and the theme builder. Pure functions.
+  content/        User-facing strings and app metadata.
+  assets/         Icons and illustrations.
+```
 
-Using TypeScript requires a compiler to convert TypeScript (widget-src/code.tsx) into JavaScript (dist/code.js)
-for the browser to run. We use esbuild to do this for us.
+Three rules keep this codebase out of trouble:
 
-We recommend writing TypeScript code using Visual Studio code:
+1. **Hooks are called unconditionally**, all inside `useWidgetState`, before any
+   branching. A hook placed after an early return silently stops running —
+   which is how the property menu disappeared in v3.
+2. **Synced state holds plain JSON only.** No class instances: they lose their
+   prototype when the widget reloads. Behaviour lives in pure functions in
+   `core/` and `theme/` instead.
+3. **Derived values are computed, never stored.** The theme is rebuilt from
+   `scheme` + `accent` on every render, so it cannot drift out of sync.
 
-1. Download Visual Studio Code if you haven't already: https://code.visualstudio.com/.
-2. Open this directory in Visual Studio Code.
-3. Compile TypeScript to JavaScript: Run the "Terminal > Run Build Task..." menu item,
-   then select "npm: watch". You will have to do this again every time
-   you reopen Visual Studio Code.
+State must also never be updated while rendering — only from event handlers or
+`useEffect`. See [Figma's widget state docs][state].
 
-That's it! Visual Studio Code will regenerate the JavaScript file every time you save.
+[state]: https://developers.figma.com/docs/widgets/widget-state/

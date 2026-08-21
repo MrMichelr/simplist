@@ -1,23 +1,25 @@
 {
-  "name": "SimpList",
-  "version": "2.0.0",
-  "description": "Your Figma widget",
+  "name": "simplist",
+  "version": "4.0.0",
+  "description": "A simple to-do list widget for Figma and FigJam",
   "scripts": {
-    "build": "esbuild widget-src/code.tsx --bundle --outfile=dist/code.js --target=es6",
-    "lint": "eslint --ext .ts,.tsx --ignore-pattern node_modules .",
-    "lint:fix": "eslint --ext .ts,.tsx --ignore-pattern node_modules --fix .",
+    "build": "npm run build:ui && esbuild widget-src/code.tsx --bundle --outfile=dist/code.js --target=es2017 --minify",
+    "dev": "npm run build:ui && esbuild widget-src/code.tsx --bundle --outfile=dist/code.js --target=es2017 --sourcemap --watch",
+    "build:ui": "node -e \"require('fs').mkdirSync('dist',{recursive:true});require('fs').copyFileSync('widget-src/ui.html','dist/ui.html')\"",
+    "lint": "eslint --ext .ts,.tsx widget-src",
+    "lint:fix": "eslint --ext .ts,.tsx widget-src --fix",
     "tsc": "tsc --noEmit -p widget-src",
-    "watch": "npm run build -- --watch"
+    "check": "npm run tsc && npm run lint"
   },
-  "author": "",
-  "license": "",
+  "author": "Michel Rodriguez",
+  "license": "UNLICENSED",
   "devDependencies": {
     "@figma/eslint-plugin-figma-plugins": "^0.15.0",
     "@figma/plugin-typings": "^1.93.0",
     "@figma/widget-typings": "*",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
-    "esbuild": "*",
+    "esbuild": "^0.21.1",
     "eslint": "^8.57.0",
     "typescript": "^5.4.5"
   },
@@ -28,19 +30,15 @@
       "plugin:@figma/figma-plugins/recommended"
     ],
     "parser": "@typescript-eslint/parser",
-    "parserOptions": {
-      "project": "./widget-src/tsconfig.json"
-    },
+    "parserOptions": { "project": "./widget-src/tsconfig.json" },
     "root": true,
     "rules": {
-      "@typescript-eslint/no-unused-vars": [
-        "error",
-        {
-          "argsIgnorePattern": "^_",
-          "varsIgnorePattern": "^_",
-          "caughtErrorsIgnorePattern": "^_"
-        }
-      ]
+      "@typescript-eslint/no-unused-vars": ["error", {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_"
+      }],
+      "no-console": ["warn", { "allow": ["warn", "error"] }]
     }
   }
 }
