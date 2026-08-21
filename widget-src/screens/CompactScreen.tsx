@@ -19,7 +19,6 @@ export function CompactScreen({ theme, tasks, actions }: WidgetState) {
           <IconButton
             theme={theme}
             name="ellipsis"
-            tooltip="Menu"
             onClick={() => actions.toggleOverlay("menu")}
           />
         }

@@ -32,14 +32,12 @@ export function InfoOverlay({ theme, actions }: WidgetState) {
           theme={theme}
           name="globe"
           size="s"
-          tooltip={App.url.website}
           onClick={() => waitForTask(openUrl(App.url.website))}
         />
         <IconButton
           theme={theme}
           name="logo.github"
           size="s"
-          tooltip={App.url.github}
           onClick={() => waitForTask(openUrl(App.url.github))}
         />
       </AutoLayout>

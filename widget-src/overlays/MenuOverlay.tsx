@@ -7,8 +7,10 @@ import { Icon } from "../components/Icon";
 import { Label } from "../components/Text";
 import { Popover } from "../components/Popover";
 import { Separator } from "../components/Separator";
-import { IconSize, Radius, Space, Theme, Type } from "../theme";
+import { IconSize, Radius, Space, Theme, Type, WIDGET_WIDTH } from "../theme";
 import { WidgetState } from "../state";
+
+const MENU_WIDTH = 250;
 
 /** The dropdown: 4px padding, 8px radius, and the heavier Drop Shadow/600. */
 export function MenuOverlay({ theme, hideDone, actions }: WidgetState) {
@@ -17,13 +19,19 @@ export function MenuOverlay({ theme, hideDone, actions }: WidgetState) {
       theme={theme}
       name="Menu"
       raised
+      width={MENU_WIDTH}
       cornerRadius={Radius.s}
       padding={Space[100]}
       spacing={Space[100]}
-      // Anchored to the header's menu button: the card's 24px padding plus the
-      // button's 40px height puts its lower edge at 64, and the design opens
-      // the menu 4px below that, right-aligned with the button.
-      x={{ type: "right", offset: Space[600] }}
+      // Anchored to the header's menu button. The card's 24px padding plus the
+      // button's 40px height puts the button's lower edge at 64; the menu opens
+      // 4px below that, with its right edge flush to the button's.
+      //
+      // Positioned from the left with an absolute offset rather than a right
+      // constraint: a right constraint resolves against the parent's measured
+      // width, and this menu is an absolutely-positioned sibling of the card,
+      // so that width is not something to rely on.
+      x={WIDGET_WIDTH - Space[600] - MENU_WIDTH}
       y={Space[600] + 40 + Space[100]}
     >
       <MenuItem

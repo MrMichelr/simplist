@@ -32,7 +32,6 @@ export function AccentOverlay({ theme, accent, actions }: WidgetState) {
             key={preset.value}
             theme={theme}
             color={preset.value}
-            label={preset.name}
             selected={preset.value.toLowerCase() === current}
             onClick={() => actions.setAccent(preset.value)}
           />
@@ -76,13 +75,11 @@ export function AccentOverlay({ theme, accent, actions }: WidgetState) {
 function Swatch({
   theme,
   color,
-  label,
   selected,
   onClick,
 }: {
   theme: Theme;
   color: string;
-  label: string;
   selected: boolean;
   onClick: () => void;
 }) {
@@ -95,7 +92,6 @@ function Swatch({
       strokeWidth={1}
       hoverStyle={{ stroke: theme.accent.base }}
       onClick={onClick}
-      tooltip={label}
     >
       <AutoLayout name="Color" width={48} height={48} cornerRadius={Radius.xs} fill={color} />
     </AutoLayout>

@@ -10,7 +10,6 @@ type Props = {
   theme: Theme;
   variant: CheckboxVariant;
   onClick: (event: WidgetClickEvent) => void | Promise<unknown>;
-  tooltip?: string;
 };
 
 /**
@@ -23,7 +22,7 @@ type Props = {
  * `editable` is the Edit screen's affordance: the same footprint holding a
  * pencil, so rows do not shift when the screen changes.
  */
-export function Checkbox({ theme, variant, onClick, tooltip }: Props) {
+export function Checkbox({ theme, variant, onClick }: Props) {
   const style = {
     open: {
       fill: undefined as string | undefined,
@@ -58,7 +57,6 @@ export function Checkbox({ theme, variant, onClick, tooltip }: Props) {
       verticalAlignItems="center"
       hoverStyle={{ fill: style.hoverFill }}
       onClick={onClick}
-      tooltip={tooltip}
     >
       {style.glyph && (
         <Icon name={style.glyph.name} size={IconSize.s} fill={style.glyph.fill} />

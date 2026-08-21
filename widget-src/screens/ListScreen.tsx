@@ -26,7 +26,6 @@ export function ListScreen({ theme, tasks, hideDone, draft, editingId, draftPare
           <IconButton
             theme={theme}
             name="ellipsis"
-            tooltip="Menu"
             onClick={() => actions.toggleOverlay("menu")}
           />
         }

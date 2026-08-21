@@ -25,7 +25,6 @@ type IconButtonProps = {
   theme: Theme;
   name: IconName;
   onClick?: (event: WidgetClickEvent) => void | Promise<unknown>;
-  tooltip?: string;
   size?: ControlSize;
   variant?: ControlVariant;
   disabled?: boolean;
@@ -47,7 +46,6 @@ export function IconButton({
   theme,
   name,
   onClick,
-  tooltip,
   size = "m",
   variant = "tertiary",
   disabled,
@@ -87,7 +85,6 @@ export function IconButton({
       opacity={revealOnHover ? 0 : 1}
       hoverStyle={hover}
       onClick={disabled ? undefined : onClick}
-      tooltip={tooltip}
     >
       <Icon name={name} size={spec.glyph} fill={glyph} />
     </AutoLayout>

@@ -12,7 +12,6 @@ type Props = {
   opacity?: number;
   hoverStyle?: WidgetJSX.HoverStyle;
   onClick?: (event: WidgetClickEvent) => void | Promise<unknown>;
-  tooltip?: string;
 };
 
 export function Icon({ name, fill, size = IconSize.m, ...rest }: Props) {

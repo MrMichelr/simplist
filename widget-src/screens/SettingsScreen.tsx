@@ -74,7 +74,6 @@ export function SettingsScreen({ theme, scheme, accent, actions }: WidgetState) 
               fill={theme.accent.base}
               hoverStyle={{ fill: theme.accent.hover }}
               onClick={() => actions.toggleOverlay("accent")}
-              tooltip={Strings.settings.accent}
             />
           </AutoLayout>
         </Row>

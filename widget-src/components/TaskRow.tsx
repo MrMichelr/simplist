@@ -71,7 +71,6 @@ export function TaskRow(props: TaskRowProps) {
           theme={theme}
           name="chevron.up"
           size="xs"
-          tooltip="Move up"
           revealOnHover
           disabled={!props.onMoveUp}
           onClick={props.onMoveUp}
@@ -80,7 +79,6 @@ export function TaskRow(props: TaskRowProps) {
           theme={theme}
           name="chevron.down"
           size="xs"
-          tooltip="Move down"
           revealOnHover
           disabled={!props.onMoveDown}
           onClick={props.onMoveDown}
@@ -107,7 +105,6 @@ export function TaskRow(props: TaskRowProps) {
           <Checkbox
             theme={theme}
             variant={checkbox}
-            tooltip={editable ? "Rename" : done ? "Mark as open" : "Mark as done"}
             onClick={editable ? props.onStartEditing : props.onToggle}
           />
         </AutoLayout>
@@ -172,7 +169,6 @@ function RowAction({ theme, editable, done, isSubtask, onDelete, onAddSubtask }:
         theme={theme}
         name="trash"
         size="s"
-        tooltip="Delete"
         fill={theme.danger.base}
         hoverFill={theme.danger.tint}
         onClick={onDelete}
@@ -186,7 +182,6 @@ function RowAction({ theme, editable, done, isSubtask, onDelete, onAddSubtask }:
         theme={theme}
         name="plus"
         size="s"
-        tooltip="Add subtask"
         fill={theme.text.disabled}
         onClick={onAddSubtask}
       />
